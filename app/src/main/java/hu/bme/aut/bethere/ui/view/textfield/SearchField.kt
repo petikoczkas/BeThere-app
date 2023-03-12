@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -23,7 +24,8 @@ fun SearchField(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = MaterialTheme.beThereDimens.gapMedium)
+            .padding(vertical = MaterialTheme.beThereDimens.gapMedium),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         TextField(
             value = text,
