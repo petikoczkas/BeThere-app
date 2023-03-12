@@ -24,7 +24,10 @@ data class BeThereDimens(
 
     val minBeThereTextFieldHeight: Dp = 56.dp,
     val minSearchFieldHeight: Dp = 40.dp,
+    val minUserCardHeight: Dp = 62.dp,
     val minEventCardHeight: Dp = 70.dp,
+
+    val userBoxHeight: Dp = 252.dp,
 
     val primaryButtonCornerSize: Dp = 20.dp,
     val textFieldCornerSize: Dp = 20.dp,

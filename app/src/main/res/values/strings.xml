@@ -9,5 +9,8 @@
     <string name="registrate">Registrate</string>
     <string name="sign_in">Sign in</string>
     <string name="save">Save</string>
+    <string name="search">Search</string>
     <string name="search_placeholder" tools:ignore="TypographyEllipsis">Search...</string>
+    <string name="your_friends">Your Friends</string>
+    <string name="others">Others</string>
 </resources>

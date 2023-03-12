@@ -49,6 +49,10 @@ data class BeThereTypography(
         fontSize = 18.sp,
         textDecoration = TextDecoration.Underline
     ),
+    val columnDescriptionTextStyle: TextStyle = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp,
+    ),
 )
 
 val LocalTypography = staticCompositionLocalOf { BeThereTypography() }
