@@ -15,7 +15,9 @@ data class BeThereColors(
     val darkGray: Color = Color.Gray,
     val transparent: Color = Color.Transparent,
 
-    val colors: Colors = lightColors()
+    val colors: Colors = lightColors(
+        primary = black
+    )
 )
 
 val LocalColors = staticCompositionLocalOf { BeThereColors() }

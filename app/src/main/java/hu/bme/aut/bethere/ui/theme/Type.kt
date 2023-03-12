@@ -49,7 +49,7 @@ data class BeThereTypography(
         fontSize = 18.sp,
         textDecoration = TextDecoration.Underline
     ),
-    val columnDescriptionTextStyle: TextStyle = TextStyle(
+    val descriptionTextStyle: TextStyle = TextStyle(
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
     ),

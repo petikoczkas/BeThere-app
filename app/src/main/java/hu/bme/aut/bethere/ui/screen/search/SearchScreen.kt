@@ -56,7 +56,7 @@ fun SearchScreen() {
                 )
             )
             SearchField(text = search, onTextChange = { search = it }, onSearchButtonClick = {})
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(MaterialTheme.beThereDimens.userBoxHeight)
@@ -64,7 +64,7 @@ fun SearchScreen() {
             ) {
                 Text(
                     text = stringResource(R.string.your_friends),
-                    style = MaterialTheme.beThereTypography.columnDescriptionTextStyle,
+                    style = MaterialTheme.beThereTypography.descriptionTextStyle,
                     modifier = Modifier.padding(
                         start = MaterialTheme.beThereDimens.gapNormal,
                     )
@@ -73,7 +73,7 @@ fun SearchScreen() {
                     modifier = Modifier
                         .padding(
                             start = MaterialTheme.beThereDimens.gapNormal,
-                            top = MaterialTheme.beThereDimens.gapLarge,
+                            top = MaterialTheme.beThereDimens.gapSmall,
                             end = MaterialTheme.beThereDimens.gapNormal,
                         )
                 ) {
@@ -81,14 +81,20 @@ fun SearchScreen() {
                         UserCard(
                             text = "Name of client",
                             onClick = {},
-                            addButtonOnClick = {},
                             modifier = Modifier
                                 .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
-                        )
+                        ) {
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_add),
+                                    contentDescription = null
+                                )
+                            }
+                        }
                     }
                 }
             }
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(MaterialTheme.beThereDimens.userBoxHeight)
@@ -96,7 +102,7 @@ fun SearchScreen() {
             ) {
                 Text(
                     text = stringResource(R.string.others),
-                    style = MaterialTheme.beThereTypography.columnDescriptionTextStyle,
+                    style = MaterialTheme.beThereTypography.descriptionTextStyle,
                     modifier = Modifier.padding(
                         start = MaterialTheme.beThereDimens.gapNormal,
                     )
@@ -105,7 +111,7 @@ fun SearchScreen() {
                     modifier = Modifier
                         .padding(
                             start = MaterialTheme.beThereDimens.gapNormal,
-                            top = MaterialTheme.beThereDimens.gapLarge,
+                            top = MaterialTheme.beThereDimens.gapSmall,
                             end = MaterialTheme.beThereDimens.gapNormal,
                         )
                 ) {
@@ -113,10 +119,16 @@ fun SearchScreen() {
                         UserCard(
                             text = "Name of client",
                             onClick = {},
-                            addButtonOnClick = {},
                             modifier = Modifier
                                 .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
-                        )
+                        ) {
+                            IconButton(onClick = { /*TODO*/ }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_add),
+                                    contentDescription = null
+                                )
+                            }
+                        }
                     }
                 }
             }
