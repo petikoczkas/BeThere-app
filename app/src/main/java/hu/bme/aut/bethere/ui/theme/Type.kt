@@ -27,6 +27,11 @@ data class BeThereTypography(
         fontSize = 56.sp,
         textAlign = TextAlign.Center
     ),
+    val eventTitleTextStyle: TextStyle = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 32.sp,
+        textAlign = TextAlign.Center
+    ),
     val beThereTextFieldTextStyle: TextStyle = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 18.sp,
