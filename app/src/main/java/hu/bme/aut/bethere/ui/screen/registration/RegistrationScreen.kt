@@ -104,7 +104,6 @@ fun RegistrationScreen(navigator: DestinationsNavigator) {
         }
         PrimaryButton(
             onClick = { navigator.navigate(RegistrationSuccessScreenDestination) },
-            enabled = true,
             text = stringResource(id = R.string.registrate),
             modifier = Modifier
                 .fillMaxWidth()

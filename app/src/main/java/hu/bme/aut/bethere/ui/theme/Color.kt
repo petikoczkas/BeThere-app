@@ -16,7 +16,8 @@ data class BeThereColors(
     val transparent: Color = Color.Transparent,
 
     val colors: Colors = lightColors(
-        primary = black
+        primary = black,
+        secondary = gray
     )
 )
 

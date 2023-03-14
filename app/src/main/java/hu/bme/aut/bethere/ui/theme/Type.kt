@@ -36,7 +36,7 @@ data class BeThereTypography(
         fontWeight = FontWeight.Normal,
         fontSize = 18.sp,
     ),
-    val disabledTextFieldTextStyle: TextStyle = TextStyle(
+    val editTextFieldTextStyle: TextStyle = TextStyle(
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
     ),

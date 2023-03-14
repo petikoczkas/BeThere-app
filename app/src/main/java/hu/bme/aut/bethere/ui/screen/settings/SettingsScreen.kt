@@ -12,8 +12,10 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -28,11 +30,14 @@ import hu.bme.aut.bethere.ui.screen.destinations.HomeScreenDestination
 import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
-import hu.bme.aut.bethere.ui.view.textfield.DisabledTextField
+import hu.bme.aut.bethere.ui.view.textfield.OutlinedEditTextField
 
 @Destination
 @Composable
 fun SettingsScreen(navigator: DestinationsNavigator) {
+    var name by rememberSaveable { mutableStateOf("Name") }
+
+
     val imageUri = rememberSaveable { mutableStateOf("") }
     val painter = rememberAsyncImagePainter(imageUri.value.ifEmpty { R.drawable.ic_person })
     val launcher = rememberLauncherForActivityResult(
@@ -80,18 +85,18 @@ fun SettingsScreen(navigator: DestinationsNavigator) {
                     contentScale = ContentScale.Crop
                 )
             }
-            DisabledTextField(
-                text = "Name",
-                modifier = Modifier.padding(
-                    vertical = MaterialTheme.beThereDimens.gapLarge,
-                    horizontal = MaterialTheme.beThereDimens.gapNormal
-                )
+            OutlinedEditTextField(
+                text = name,
+                onTextChange = { name = it },
+                modifier = Modifier
+                    .padding(
+                        vertical = MaterialTheme.beThereDimens.gapLarge,
+                        horizontal = MaterialTheme.beThereDimens.gapNormal
+                    )
             )
-
         }
         PrimaryButton(
             onClick = { navigator.navigate(HomeScreenDestination) },
-            enabled = true,
             text = stringResource(R.string.save),
             modifier = Modifier
                 .fillMaxWidth()

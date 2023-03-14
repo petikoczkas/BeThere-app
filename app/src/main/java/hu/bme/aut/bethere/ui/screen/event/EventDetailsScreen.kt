@@ -4,7 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.*
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -25,6 +28,7 @@ import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.card.UserCard
+import hu.bme.aut.bethere.ui.view.textfield.EditTextField
 
 @Destination
 @Composable
@@ -110,7 +114,6 @@ fun EventDetailsScreen(navigator: DestinationsNavigator) {
         }
         PrimaryButton(
             onClick = { navigator.navigate(EventScreenDestination) },
-            enabled = true,
             text = stringResource(R.string.save),
             modifier = Modifier
                 .fillMaxWidth()
@@ -130,16 +133,6 @@ private fun Header() {
     var date by rememberSaveable { mutableStateOf("2023.03.12") }
     var location by rememberSaveable { mutableStateOf("anyu") }
 
-
-    val textFieldColors = TextFieldDefaults.textFieldColors(
-        textColor = MaterialTheme.beThereColors.black,
-        disabledTextColor = MaterialTheme.beThereColors.black,
-        focusedIndicatorColor = MaterialTheme.beThereColors.black,
-        unfocusedIndicatorColor = MaterialTheme.beThereColors.black,
-        disabledIndicatorColor = MaterialTheme.beThereColors.transparent,
-        backgroundColor = MaterialTheme.beThereColors.gray,
-        cursorColor = MaterialTheme.beThereColors.black
-    )
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -154,46 +147,34 @@ private fun Header() {
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                TextField(
-                    value = "Name:",
-                    onValueChange = {},
-                    enabled = false,
-                    textStyle = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    colors = textFieldColors
+                EditTextField(
+                    text = "Name:",
+                    onTextChange = {},
+                    enabled = false
                 )
-                TextField(
-                    value = "Time and date:",
-                    onValueChange = {},
+                EditTextField(
+                    text = "Time and date:",
+                    onTextChange = {},
                     enabled = false,
-                    textStyle = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    colors = textFieldColors
                 )
-                TextField(
-                    value = "Location:",
-                    onValueChange = {},
+                EditTextField(
+                    text = "Location:",
+                    onTextChange = {},
                     enabled = false,
-                    textStyle = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    colors = textFieldColors
                 )
             }
             Column(modifier = Modifier.weight(1f)) {
-                TextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    textStyle = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    colors = textFieldColors
+                EditTextField(
+                    text = name,
+                    onTextChange = { name = it },
                 )
-                TextField(
-                    value = date,
-                    onValueChange = { date = it },
-                    textStyle = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    colors = textFieldColors
+                EditTextField(
+                    text = date,
+                    onTextChange = { date = it },
                 )
-                TextField(
-                    value = location,
-                    onValueChange = { location = it },
-                    textStyle = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    colors = textFieldColors
+                EditTextField(
+                    text = location,
+                    onTextChange = { location = it },
                 )
             }
         }
