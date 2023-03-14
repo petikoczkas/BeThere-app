@@ -13,7 +13,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
+import hu.bme.aut.bethere.ui.screen.destinations.HomeScreenDestination
+import hu.bme.aut.bethere.ui.screen.destinations.RegistrationScreenDestination
 import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
@@ -21,9 +26,10 @@ import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.textfield.EmailTextField
 import hu.bme.aut.bethere.ui.view.textfield.PasswordTextField
 
-
+@RootNavGraph(start = true)
+@Destination
 @Composable
-fun SignInScreen() {
+fun SignInScreen(navigator: DestinationsNavigator) {
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
 
@@ -54,7 +60,7 @@ fun SignInScreen() {
                 modifier = Modifier.padding(vertical = MaterialTheme.beThereDimens.gapNormal)
             )
             Button(
-                onClick = { /*TODO*/ },
+                onClick = { navigator.navigate(RegistrationScreenDestination) },
                 colors = ButtonDefaults.buttonColors(
                     backgroundColor = MaterialTheme.beThereColors.white,
                     contentColor = MaterialTheme.beThereColors.black
@@ -72,7 +78,7 @@ fun SignInScreen() {
             }
         }
         PrimaryButton(
-            onClick = { /*TODO*/ },
+            onClick = { navigator.navigate(HomeScreenDestination) },
             text = stringResource(R.string.sign_in),
             modifier = Modifier
                 .fillMaxWidth()

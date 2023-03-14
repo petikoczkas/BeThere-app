@@ -12,20 +12,28 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
+import hu.bme.aut.bethere.ui.screen.NavGraphs
+import hu.bme.aut.bethere.ui.screen.destinations.EventScreenDestination
+import hu.bme.aut.bethere.ui.screen.destinations.SearchScreenDestination
+import hu.bme.aut.bethere.ui.screen.destinations.SettingsScreenDestination
+import hu.bme.aut.bethere.ui.screen.destinations.SignInScreenDestination
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.view.card.EventCard
 import hu.bme.aut.bethere.ui.view.textfield.SearchField
 
+@Destination
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navigator: DestinationsNavigator) {
     var search by rememberSaveable { mutableStateOf("") }
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(top = MaterialTheme.beThereDimens.gapNormal),
     ) {
-        Header()
+        Header(navigator = navigator)
         SearchField(text = search, onTextChange = { search = it }, onSearchButtonClick = {})
         LazyColumn(
             modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
@@ -33,7 +41,7 @@ fun HomeScreen() {
             items(15) {
                 EventCard(
                     text = "Event",
-                    onClick = {},
+                    onClick = { navigator.navigate(EventScreenDestination) },
                     modifier = Modifier
                         .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
                 )
@@ -43,13 +51,16 @@ fun HomeScreen() {
 }
 
 @Composable
-private fun Header() {
+private fun Header(navigator: DestinationsNavigator) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                navigator.clearBackStack(NavGraphs.root)
+                navigator.navigate(SignInScreenDestination)
+            },
             modifier = Modifier.padding(start = MaterialTheme.beThereDimens.gapMedium)
         ) {
             Icon(
@@ -59,7 +70,7 @@ private fun Header() {
         }
         Row {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { navigator.navigate(SearchScreenDestination) },
                 modifier = Modifier.padding(end = MaterialTheme.beThereDimens.gapMedium)
             ) {
                 Icon(
@@ -68,7 +79,7 @@ private fun Header() {
                 )
             }
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { navigator.navigate(SettingsScreenDestination) },
                 modifier = Modifier.padding(end = MaterialTheme.beThereDimens.gapMedium)
             ) {
                 Icon(

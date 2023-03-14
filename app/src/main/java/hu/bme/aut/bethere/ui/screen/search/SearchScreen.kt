@@ -15,14 +15,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.card.UserCard
 import hu.bme.aut.bethere.ui.view.textfield.SearchField
 
+@Destination
 @Composable
-fun SearchScreen() {
+fun SearchScreen(navigator: DestinationsNavigator) {
     var search by rememberSaveable { mutableStateOf("") }
 
     Column(
@@ -37,7 +40,7 @@ fun SearchScreen() {
 
         ) {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { navigator.popBackStack() },
                 modifier = Modifier
                     .align(Alignment.Start)
                     .padding(start = MaterialTheme.beThereDimens.gapMedium)

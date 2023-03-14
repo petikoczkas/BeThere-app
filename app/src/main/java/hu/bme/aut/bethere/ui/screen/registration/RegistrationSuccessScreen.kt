@@ -12,14 +12,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
+import hu.bme.aut.bethere.ui.screen.destinations.HomeScreenDestination
 import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 
+@Destination
 @Composable
-fun RegistrationSuccessScreen() {
+fun RegistrationSuccessScreen(navigator: DestinationsNavigator) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -57,7 +61,7 @@ fun RegistrationSuccessScreen() {
             }
         }
         PrimaryButton(
-            onClick = { /*TODO*/ },
+            onClick = { navigator.navigate(HomeScreenDestination) },
             text = "Next",
             modifier = Modifier
                 .fillMaxWidth()

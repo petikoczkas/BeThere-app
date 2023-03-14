@@ -16,13 +16,17 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
+import hu.bme.aut.bethere.ui.screen.destinations.EventDetailsScreenDestination
 import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 
+@Destination
 @Composable
-fun EventScreen() {
+fun EventScreen(navigator: DestinationsNavigator) {
     var text by rememberSaveable { mutableStateOf("") }
 
     Column(
@@ -37,9 +41,9 @@ fun EventScreen() {
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
-            Header()
+            Header(navigator = navigator)
             InfoBox()
-            TODO("Implement chat")
+            //TODO("Implement chat")
         }
         Row(
             modifier = Modifier
@@ -80,14 +84,14 @@ fun EventScreen() {
 }
 
 @Composable
-private fun Header() {
+private fun Header(navigator: DestinationsNavigator) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = { navigator.popBackStack() },
             modifier = Modifier
                 .padding(start = MaterialTheme.beThereDimens.gapMedium)
                 .weight(1f)
@@ -103,7 +107,7 @@ private fun Header() {
             modifier = Modifier.weight(5f)
         )
         IconButton(
-            onClick = { /*TODO*/ },
+            onClick = { navigator.navigate(EventDetailsScreenDestination) },
             modifier = Modifier
                 .padding(end = MaterialTheme.beThereDimens.gapMedium)
                 .weight(1f)

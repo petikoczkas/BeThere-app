@@ -17,17 +17,20 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
+import com.ramcosta.composedestinations.annotation.Destination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import hu.bme.aut.bethere.R
+import hu.bme.aut.bethere.ui.screen.destinations.RegistrationSuccessScreenDestination
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.textfield.BeThereTextField
 import hu.bme.aut.bethere.ui.view.textfield.EmailTextField
-import hu.bme.aut.bethere.R
 import hu.bme.aut.bethere.ui.view.textfield.PasswordTextField
 
-
+@Destination
 @Composable
-fun RegistrationScreen() {
+fun RegistrationScreen(navigator: DestinationsNavigator) {
     var email by rememberSaveable { mutableStateOf("") }
     var firstName by rememberSaveable { mutableStateOf("") }
     var lastName by rememberSaveable { mutableStateOf("") }
@@ -48,7 +51,7 @@ fun RegistrationScreen() {
 
         ) {
             IconButton(
-                onClick = { /*TODO*/ },
+                onClick = { navigator.popBackStack() },
                 modifier = Modifier
                     .align(Alignment.Start)
                     .padding(start = MaterialTheme.beThereDimens.gapMedium)
@@ -100,7 +103,7 @@ fun RegistrationScreen() {
             )
         }
         PrimaryButton(
-            onClick = { /*TODO*/ },
+            onClick = { navigator.navigate(RegistrationSuccessScreenDestination) },
             enabled = true,
             text = stringResource(id = R.string.registrate),
             modifier = Modifier
