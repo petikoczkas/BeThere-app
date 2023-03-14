@@ -2,6 +2,7 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'com.google.devtools.ksp' version '1.8.10-1.0.9'
+    id 'com.google.gms.google-services'
 }
 
 android {
@@ -59,6 +60,7 @@ dependencies {
     implementation "io.coil-kt:coil-compose:2.2.2"
 
     implementation 'io.github.raamcosta.compose-destinations:core:1.7.33-beta'
+    implementation 'com.google.firebase:firebase-auth-ktx:21.1.0'
     ksp 'io.github.raamcosta.compose-destinations:ksp:1.7.33-beta'
 
     testImplementation 'junit:junit:4.13.2'
