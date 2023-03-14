@@ -27,11 +27,16 @@ data class BeThereTypography(
         fontSize = 56.sp,
         textAlign = TextAlign.Center
     ),
+    val eventTitleTextStyle: TextStyle = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 32.sp,
+        textAlign = TextAlign.Center
+    ),
     val beThereTextFieldTextStyle: TextStyle = TextStyle(
         fontWeight = FontWeight.Normal,
         fontSize = 18.sp,
     ),
-    val disabledTextFieldTextStyle: TextStyle = TextStyle(
+    val editTextFieldTextStyle: TextStyle = TextStyle(
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
     ),
@@ -48,6 +53,10 @@ data class BeThereTypography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
         textDecoration = TextDecoration.Underline
+    ),
+    val descriptionTextStyle: TextStyle = TextStyle(
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp,
     ),
 )
 
