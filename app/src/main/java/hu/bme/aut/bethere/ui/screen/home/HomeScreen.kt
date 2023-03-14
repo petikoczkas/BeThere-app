@@ -10,17 +10,16 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
 import hu.bme.aut.bethere.ui.screen.NavGraphs
-import hu.bme.aut.bethere.ui.screen.destinations.EventScreenDestination
-import hu.bme.aut.bethere.ui.screen.destinations.SearchScreenDestination
-import hu.bme.aut.bethere.ui.screen.destinations.SettingsScreenDestination
-import hu.bme.aut.bethere.ui.screen.destinations.SignInScreenDestination
+import hu.bme.aut.bethere.ui.screen.destinations.*
 import hu.bme.aut.bethere.ui.theme.beThereDimens
+import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.card.EventCard
 import hu.bme.aut.bethere.ui.view.textfield.SearchField
 
@@ -30,23 +29,44 @@ fun HomeScreen(navigator: DestinationsNavigator) {
     var search by rememberSaveable { mutableStateOf("") }
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .padding(top = MaterialTheme.beThereDimens.gapNormal),
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Header(navigator = navigator)
-        SearchField(text = search, onTextChange = { search = it }, onSearchButtonClick = {})
-        LazyColumn(
-            modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = MaterialTheme.beThereDimens.gapNormal)
+                .weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally
+
         ) {
-            items(15) {
-                EventCard(
-                    text = "Event",
-                    onClick = { navigator.navigate(EventScreenDestination) },
-                    modifier = Modifier
-                        .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
-                )
+            Header(navigator = navigator)
+            SearchField(text = search, onTextChange = { search = it }, onSearchButtonClick = {})
+            LazyColumn(
+                modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
+            ) {
+                items(3) {
+                    EventCard(
+                        text = "Event",
+                        onClick = { navigator.navigate(EventScreenDestination) },
+                        modifier = Modifier
+                            .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
+                    )
+                }
             }
         }
+        PrimaryButton(
+            text = "Add event",
+            onClick = { navigator.navigate(EventDetailsScreenDestination) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = MaterialTheme.beThereDimens.gapNormal,
+                    top = MaterialTheme.beThereDimens.gapNormal,
+                    end = MaterialTheme.beThereDimens.gapNormal,
+                    bottom = MaterialTheme.beThereDimens.gapLarge,
+                )
+        )
     }
 }
 
