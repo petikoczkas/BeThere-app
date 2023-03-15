@@ -18,6 +18,7 @@ fun EmailTextField(
         text = email,
         onTextChange = onEmailTextChange,
         label = stringResource(id = R.string.email),
+        isEmail = true,
         leadingIcon = R.drawable.ic_email,
         keyBoardType = KeyboardType.Email,
         modifier = modifier
