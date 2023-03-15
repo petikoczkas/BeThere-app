@@ -33,6 +33,7 @@ fun BeThereTextField(
     keyBoardType: KeyboardType = KeyboardType.Text,
     enabled: Boolean = true,
     isEmail: Boolean = false,
+    isPasswordReg: Boolean = false,
     isPassword: Boolean = false,
     passwordVisible: Boolean = true,
     onPasswordVisibilityChange: () -> Unit = {}
@@ -51,7 +52,7 @@ fun BeThereTextField(
         value = text,
         onValueChange = {
             onTextChange(it)
-            if (isPassword) {
+            if (isPasswordReg) {
                 isErrorInText =
                     !Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$").matcher(it)
                         .matches()
@@ -93,48 +94,4 @@ fun BeThereTextField(
             }
         }
     )
-
-    /*TextField(
-        value = text,
-        onValueChange = {
-            onTextChange(it)
-            isErrorInText = if (isPassword) {
-                !Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$").matcher(it)
-                    .matches()
-            } else {
-                !Patterns.EMAIL_ADDRESS.matcher(it).matches()
-            }
-        },
-        singleLine = true,
-        enabled = enabled,
-        isError = isErrorInText,
-        label = { Text(label) },
-        leadingIcon = {
-            Icon(
-                painter = painterResource(id = leadingIcon),
-                contentDescription = null
-            )
-        },
-        modifier = modifier
-            .fillMaxWidth()
-            .heightIn(MaterialTheme.beThereDimens.minBeThereTextFieldHeight),
-        colors = beThereTextFieldColors,
-        textStyle = MaterialTheme.beThereTypography.beThereTextFieldTextStyle,
-        keyboardOptions = KeyboardOptions(keyboardType = keyBoardType),
-        shape = RoundedCornerShape(MaterialTheme.beThereDimens.textFieldCornerSize),
-        trailingIcon = {
-            if (isPassword) {
-                val image: Painter =
-                    if (passwordVisible) {
-                        painterResource(id = R.drawable.ic_visibility)
-                    } else {
-                        painterResource(id = R.drawable.ic_visibility_off)
-                    }
-
-                IconButton(onClick = onPasswordVisibilityChange) {
-                    Icon(painter = image, contentDescription = null)
-                }
-            }
-        }
-    )*/
 }
