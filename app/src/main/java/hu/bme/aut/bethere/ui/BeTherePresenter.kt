@@ -47,7 +47,8 @@ class BeTherePresenter @Inject constructor(
 
     suspend fun getUsers() = beThereInteractor.getUsers()
 
-    //suspend fun getCurrentUser() = beThereInteractor.getCurrentUser()
-
+    suspend fun updateUser(user: User) {
+        beThereInteractor.updateUser(user = user)
+    }
 
 }

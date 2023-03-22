@@ -47,4 +47,11 @@ class FirebaseStorageService @Inject constructor() {
         }
         return dataOrException
     }
+
+    suspend fun updateUser(
+        firebaseFirestore: FirebaseFirestore,
+        user: User,
+    ) {
+        firebaseFirestore.collection(USER_COLLECTION).document(user.id).set(user).await()
+    }
 }

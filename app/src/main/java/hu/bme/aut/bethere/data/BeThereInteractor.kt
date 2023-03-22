@@ -79,6 +79,12 @@ class BeThereInteractor @Inject constructor(
         )
     }
 
+    suspend fun updateUser(user: User) {
+        firebaseStorageService.updateUser(
+            firebaseFirestore = firebaseFirestore,
+            user = user,
+        )
+    }
 }
 
 
