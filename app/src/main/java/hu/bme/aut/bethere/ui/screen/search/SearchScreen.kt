@@ -2,22 +2,23 @@ package hu.bme.aut.bethere.ui.screen.search
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
+import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.card.UserCard
@@ -25,8 +26,13 @@ import hu.bme.aut.bethere.ui.view.textfield.SearchField
 
 @Destination
 @Composable
-fun SearchScreen(navigator: DestinationsNavigator) {
-    var search by rememberSaveable { mutableStateOf("") }
+fun SearchScreen(
+    navigator: DestinationsNavigator,
+    isAddFriendClicked: Boolean,
+    viewModel: SearchViewModel = hiltViewModel()
+) {
+    val searchText by viewModel.searchText.collectAsState()
+    val searchedUsers by viewModel.searchedUsers.collectAsState()
 
     Column(
         modifier = Modifier
@@ -58,80 +64,70 @@ fun SearchScreen(navigator: DestinationsNavigator) {
                     bottom = MaterialTheme.beThereDimens.gapVeryVeryLarge,
                 )
             )
-            SearchField(text = search, onTextChange = { search = it }, onSearchButtonClick = {})
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(MaterialTheme.beThereDimens.userBoxHeight)
-                    .padding(top = MaterialTheme.beThereDimens.gapNormal)
-            ) {
-                Text(
+            SearchField(
+                text = searchText,
+                onTextChange = viewModel::onSearchTextChange,
+                onSearchButtonClick = {}
+            )
+            var modifier = Modifier.fillMaxWidth()
+            if (!isAddFriendClicked) {
+                modifier = modifier.height(MaterialTheme.beThereDimens.userBoxHeight)
+                SearchList(
                     text = stringResource(R.string.your_friends),
-                    style = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    modifier = Modifier.padding(
-                        start = MaterialTheme.beThereDimens.gapNormal,
-                    )
+                    users = viewModel.separateUsers(searchedUsers, true),
+                    addFriendOnClick = { /*TODO*/ },
+                    modifier = modifier
                 )
-                LazyColumn(
-                    modifier = Modifier
-                        .padding(
-                            start = MaterialTheme.beThereDimens.gapNormal,
-                            top = MaterialTheme.beThereDimens.gapSmall,
-                            end = MaterialTheme.beThereDimens.gapNormal,
-                        )
-                ) {
-                    items(5) {
-                        UserCard(
-                            text = "Name of client",
-                            onClick = {},
-                            modifier = Modifier
-                                .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
-                        ) {
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_add),
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                    }
-                }
             }
-            Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(MaterialTheme.beThereDimens.userBoxHeight)
-                    .padding(top = MaterialTheme.beThereDimens.gapNormal)
-            ) {
-                Text(
-                    text = stringResource(R.string.others),
-                    style = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    modifier = Modifier.padding(
-                        start = MaterialTheme.beThereDimens.gapNormal,
-                    )
+            SearchList(
+                text = stringResource(R.string.others),
+                users = viewModel.separateUsers(searchedUsers, false),
+                addFriendOnClick = { /*TODO*/ },
+                modifier = modifier
+            )
+        }
+    }
+}
+
+@Composable
+private fun SearchList(
+    text: String,
+    users: List<User>,
+    addFriendOnClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .fillMaxWidth()
+            .padding(top = MaterialTheme.beThereDimens.gapNormal)
+    ) {
+        Text(
+            text = text,
+            style = MaterialTheme.beThereTypography.descriptionTextStyle,
+            modifier = Modifier.padding(
+                start = MaterialTheme.beThereDimens.gapNormal,
+            )
+        )
+        LazyColumn(
+            modifier = Modifier
+                .padding(
+                    start = MaterialTheme.beThereDimens.gapNormal,
+                    top = MaterialTheme.beThereDimens.gapSmall,
+                    end = MaterialTheme.beThereDimens.gapNormal,
                 )
-                LazyColumn(
+        ) {
+            items(users) { u ->
+                UserCard(
+                    text = u.name,
+                    onClick = {},
                     modifier = Modifier
-                        .padding(
-                            start = MaterialTheme.beThereDimens.gapNormal,
-                            top = MaterialTheme.beThereDimens.gapSmall,
-                            end = MaterialTheme.beThereDimens.gapNormal,
-                        )
+                        .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
                 ) {
-                    items(5) {
-                        UserCard(
-                            text = "Name of client",
-                            onClick = {},
-                            modifier = Modifier
-                                .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
-                        ) {
-                            IconButton(onClick = { /*TODO*/ }) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_add),
-                                    contentDescription = null
-                                )
-                            }
-                        }
+                    IconButton(onClick = addFriendOnClick) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_add),
+                            contentDescription = null
+                        )
                     }
                 }
             }

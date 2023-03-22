@@ -90,7 +90,7 @@ private fun Header(navigator: DestinationsNavigator) {
         }
         Row {
             IconButton(
-                onClick = { navigator.navigate(SearchScreenDestination) },
+                onClick = { navigator.navigate(SearchScreenDestination(isAddFriendClicked = true)) },
                 modifier = Modifier.padding(end = MaterialTheme.beThereDimens.gapMedium)
             ) {
                 Icon(

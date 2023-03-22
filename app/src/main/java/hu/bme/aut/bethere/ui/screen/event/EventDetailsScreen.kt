@@ -75,7 +75,7 @@ fun EventDetailsScreen(navigator: DestinationsNavigator) {
                         )
                     )
                     IconButton(
-                        onClick = { navigator.navigate(SearchScreenDestination) },
+                        onClick = { navigator.navigate(SearchScreenDestination(isAddFriendClicked = false)) },
                         modifier = Modifier.padding(
                             end = MaterialTheme.beThereDimens.gapNormal
                         )
