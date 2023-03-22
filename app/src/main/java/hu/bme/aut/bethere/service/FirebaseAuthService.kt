@@ -1,10 +1,11 @@
 package hu.bme.aut.bethere.service
 
 import com.google.firebase.auth.FirebaseAuth
+import kotlinx.coroutines.tasks.await
 
 object FirebaseAuthService {
 
-    fun signIn(
+    suspend fun signIn(
         firebaseAuth: FirebaseAuth,
         email: String,
         password: String,
@@ -19,10 +20,10 @@ object FirebaseAuthService {
                 } else {
                     onFailure(it.exception)
                 }
-            }
+            }.await()
     }
 
-    fun registrate(
+    suspend fun registrate(
         firebaseAuth: FirebaseAuth,
         email: String,
         password: String,
@@ -36,6 +37,6 @@ object FirebaseAuthService {
                 } else {
                     onFailure(it.exception)
                 }
-            }
+            }.await()
     }
 }
