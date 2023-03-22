@@ -1,4 +1,4 @@
-package hu.bme.aut.bethere.common
+package hu.bme.aut.bethere.utils
 
 import android.util.Patterns
 import java.util.regex.Pattern
