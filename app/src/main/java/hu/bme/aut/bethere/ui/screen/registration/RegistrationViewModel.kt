@@ -1,23 +1,25 @@
 package hu.bme.aut.bethere.ui.screen.registration
 
 import androidx.lifecycle.ViewModel
-import com.google.firebase.auth.FirebaseAuth
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import hu.bme.aut.bethere.common.isValidEmail
-import hu.bme.aut.bethere.common.isValidPassword
-import hu.bme.aut.bethere.common.passwordMatches
-import hu.bme.aut.bethere.service.FirebaseAuthService
+import hu.bme.aut.bethere.data.model.User
+import hu.bme.aut.bethere.ui.BeTherePresenter
 import hu.bme.aut.bethere.ui.screen.registration.RegistrationUiState.RegistrationLoaded
 import hu.bme.aut.bethere.ui.screen.registration.RegistrationUiState.RegistrationSuccess
+import hu.bme.aut.bethere.utils.isValidEmail
+import hu.bme.aut.bethere.utils.isValidPassword
+import hu.bme.aut.bethere.utils.passwordMatches
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
-    //private val firebaseAuth: FirebaseAuth
+    private val beTherePresenter: BeTherePresenter
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<RegistrationUiState>(
@@ -65,22 +67,26 @@ class RegistrationViewModel @Inject constructor(
         return true
     }
 
-    private val firebaseAuth = FirebaseAuth.getInstance()
-
     fun buttonOnClick() {
         val email = (_uiState.value as RegistrationLoaded).email
         val password = (_uiState.value as RegistrationLoaded).password
         if ((_uiState.value as RegistrationLoaded).password.passwordMatches((_uiState.value as RegistrationLoaded).passwordAgain)) {
-            FirebaseAuthService.registrate(firebaseAuth = firebaseAuth,
-                email = email,
-                password = password,
-                onSuccess = {
-                    _uiState.value = RegistrationSuccess
-                },
-                onFailure = {
-                    _registrationFailedEvent.value =
-                        RegistrationFailure(isRegistrationFailed = true, exception = it)
-                })
+            viewModelScope.launch {
+                beTherePresenter.registrate(
+                    email = email,
+                    password = password,
+                    user = User(
+                        name = "${(_uiState.value as RegistrationLoaded).firstName} ${(_uiState.value as RegistrationLoaded).lastName}"
+                    ),
+                    onSuccess = {
+                        _uiState.value = RegistrationSuccess
+                    },
+                    onFailure = {
+                        _registrationFailedEvent.value =
+                            RegistrationFailure(isRegistrationFailed = true, exception = it)
+                    }
+                )
+            }
         } else {
             _registrationFailedEvent.value = RegistrationFailure(
                 isRegistrationFailed = true,
