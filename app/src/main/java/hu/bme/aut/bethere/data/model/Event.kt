@@ -7,6 +7,6 @@ data class Event(
     val name: String,
     val date: Date,
     val location: String,
-    val users: List<User>,
+    val users: List<String>,
     val messages: List<Message>
 )
