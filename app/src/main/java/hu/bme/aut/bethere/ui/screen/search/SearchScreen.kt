@@ -1,5 +1,6 @@
 package hu.bme.aut.bethere.ui.screen.search
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,6 +13,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,6 +35,8 @@ fun SearchScreen(
 ) {
     val searchText by viewModel.searchText.collectAsState()
     val searchedUsers by viewModel.searchedUsers.collectAsState()
+    val addFriendFailedEvent by viewModel.addFriendFailedEvent.collectAsState()
+    viewModel.separateUsers(searchedUsers)
 
     Column(
         modifier = Modifier
@@ -74,18 +78,29 @@ fun SearchScreen(
                 modifier = modifier.height(MaterialTheme.beThereDimens.userBoxHeight)
                 SearchList(
                     text = stringResource(R.string.your_friends),
-                    users = viewModel.separateUsers(searchedUsers, true),
-                    addFriendOnClick = { /*TODO*/ },
+                    users = viewModel.friends,
+                    addFriendOnClick = { },
                     modifier = modifier
                 )
             }
             SearchList(
                 text = stringResource(R.string.others),
-                users = viewModel.separateUsers(searchedUsers, false),
-                addFriendOnClick = { /*TODO*/ },
+                users = viewModel.others,
+                addFriendOnClick = {
+                    viewModel.addFriend(it)
+                    viewModel.separateUsers(searchedUsers)
+                },
                 modifier = modifier
             )
         }
+    }
+    if (addFriendFailedEvent.isAddFriendFailed) {
+        viewModel.handledAddFriendFailedEvent()
+        Toast.makeText(
+            LocalContext.current,
+            "Error adding a friend",
+            Toast.LENGTH_LONG
+        ).show()
     }
 }
 
@@ -93,7 +108,7 @@ fun SearchScreen(
 private fun SearchList(
     text: String,
     users: List<User>,
-    addFriendOnClick: () -> Unit,
+    addFriendOnClick: (u: User) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -123,7 +138,7 @@ private fun SearchList(
                     modifier = Modifier
                         .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
                 ) {
-                    IconButton(onClick = addFriendOnClick) {
+                    IconButton(onClick = { addFriendOnClick(u) }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_add),
                             contentDescription = null

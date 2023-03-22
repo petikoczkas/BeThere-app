@@ -1,6 +1,7 @@
 package hu.bme.aut.bethere.ui.screen.search
 
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -26,6 +27,11 @@ class SearchViewModel @Inject constructor(
         )
     var currentUser = User()
 
+    private val _friends = mutableStateListOf<User>()
+    val friends: List<User> = _friends
+    private val _others = mutableStateListOf<User>()
+    val others: List<User> = _others
+
 
     private val _searchText = MutableStateFlow("")
     val searchText = _searchText.asStateFlow()
@@ -46,6 +52,10 @@ class SearchViewModel @Inject constructor(
             _searchedUsers.value
         )
 
+    private val _addFriendFailedEvent =
+        MutableStateFlow(AddFriendFailure(isAddFriendFailed = false, exception = null))
+    val addFriendFailedEvent = _addFriendFailedEvent.asStateFlow()
+
     init {
         getUsers()
     }
@@ -63,14 +73,34 @@ class SearchViewModel @Inject constructor(
         _searchText.value = text
     }
 
-    fun separateUsers(users: List<User>, isFriendList: Boolean): List<User> {
-        val friends = mutableListOf<User>()
-        val others = mutableListOf<User>()
+    fun separateUsers(users: List<User>) {
+        _friends.clear()
+        _others.clear()
         for (u in users) {
-            if (currentUser.friends.contains(u.id)) friends.add(u)
-            else others.add(u)
+            if (currentUser.friends.contains(u.id)) _friends.add(u)
+            else _others.add(u)
         }
-        return if (isFriendList) friends.toList()
-        else others.toList()
     }
+
+    fun addFriend(user: User) {
+        viewModelScope.launch {
+            try {
+                currentUser.friends.add(user.id)
+                beTherePresenter.updateUser(user = currentUser)
+                onSearchTextChange("")
+            } catch (e: Exception) {
+                _addFriendFailedEvent.value =
+                    AddFriendFailure(isAddFriendFailed = true, exception = e)
+            }
+        }
+    }
+
+    fun handledAddFriendFailedEvent() {
+        _addFriendFailedEvent.update { _addFriendFailedEvent.value.copy(isAddFriendFailed = false) }
+    }
+
+    data class AddFriendFailure(
+        val isAddFriendFailed: Boolean,
+        val exception: Exception?
+    )
 }
