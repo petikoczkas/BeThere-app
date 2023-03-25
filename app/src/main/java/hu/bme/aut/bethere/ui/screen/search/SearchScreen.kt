@@ -11,6 +11,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -36,6 +37,8 @@ fun SearchScreen(
     val searchText by viewModel.searchText.collectAsState()
     val searchedUsers by viewModel.searchedUsers.collectAsState()
     val addFriendFailedEvent by viewModel.addFriendFailedEvent.collectAsState()
+    val allUser by viewModel.allUser.observeAsState()
+    viewModel.setSearchedUsers(allUser)
     viewModel.separateUsers(searchedUsers)
 
     Column(
@@ -86,8 +89,8 @@ fun SearchScreen(
             SearchList(
                 text = stringResource(R.string.others),
                 users = viewModel.others,
-                addFriendOnClick = {
-                    viewModel.addFriend(it)
+                addFriendOnClick = { u ->
+                    viewModel.addFriend(u)
                     viewModel.separateUsers(searchedUsers)
                 },
                 modifier = modifier

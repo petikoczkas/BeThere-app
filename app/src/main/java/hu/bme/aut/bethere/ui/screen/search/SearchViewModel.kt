@@ -1,16 +1,17 @@
 package hu.bme.aut.bethere.ui.screen.search
 
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import hu.bme.aut.bethere.data.DataOrException
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.ui.BeTherePresenter
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -18,13 +19,9 @@ class SearchViewModel @Inject constructor(
     private val beTherePresenter: BeTherePresenter
 ) : ViewModel() {
 
-    private val allUser: MutableState<DataOrException<MutableList<User>, Exception>> =
-        mutableStateOf(
-            DataOrException(
-                mutableListOf(),
-                Exception("")
-            )
-        )
+    private val _allUser = MutableLiveData<List<User>>()
+    val allUser: LiveData<List<User>> = _allUser
+
     var currentUser = User()
 
     private val _friends = mutableStateListOf<User>()
@@ -62,15 +59,26 @@ class SearchViewModel @Inject constructor(
 
     private fun getUsers() {
         viewModelScope.launch {
-            allUser.value = beTherePresenter.getUsers()
-            allUser.value.data?.last()?.let { currentUser = it }
-            allUser.value.data?.removeLast()
-            _searchedUsers.value = allUser.value.data ?: mutableListOf()
+            currentUser = beTherePresenter.getCurrentUser()
+            withContext(Dispatchers.IO) {
+                beTherePresenter.getUsers().collect {
+                    _allUser.postValue(it)
+                }
+            }
         }
     }
 
     fun onSearchTextChange(text: String) {
         _searchText.value = text
+    }
+
+    fun setSearchedUsers(allUser: List<User>?) {
+        allUser?.let {
+            _searchedUsers.value.clear()
+            for (u in it) {
+                _searchedUsers.value.add(u)
+            }
+        }
     }
 
     fun separateUsers(users: List<User>) {
