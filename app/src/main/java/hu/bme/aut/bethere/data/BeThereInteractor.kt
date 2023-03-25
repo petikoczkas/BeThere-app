@@ -8,6 +8,7 @@ import hu.bme.aut.bethere.service.FirebaseAuthService
 import hu.bme.aut.bethere.service.FirebaseStorageService
 import hu.bme.aut.bethere.utils.Constants.NAME_PROPERTY
 import hu.bme.aut.bethere.utils.Constants.USER_COLLECTION
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class BeThereInteractor @Inject constructor(
@@ -72,12 +73,21 @@ class BeThereInteractor @Inject constructor(
         )
     }
 
-    suspend fun getUsers(): DataOrException<MutableList<User>, Exception> {
+    fun signOut() {
+        FirebaseAuthService.signOut(firebaseAuth = firebaseAuth)
+    }
+
+    fun getUsers(): Flow<List<User>> {
         return firebaseStorageService.getUsers(
             queryUsersByName = queryUsers.orderBy(NAME_PROPERTY, Query.Direction.ASCENDING),
             userId = currentUser?.uid.toString()
         )
     }
+
+    suspend fun getCurrentUser() = firebaseStorageService.getCurrentUser(
+        queryUsers = queryUsers,
+        userId = currentUser?.uid.toString()
+    )
 
     suspend fun updateUser(user: User) {
         firebaseStorageService.updateUser(
@@ -85,6 +95,13 @@ class BeThereInteractor @Inject constructor(
             user = user,
         )
     }
+
+    fun getCurrentUserEvents(user: User) =
+        firebaseStorageService.getCurrentUserEvents(
+            firebaseFirestore = firebaseFirestore,
+            user = user
+        )
+
 }
 
 
