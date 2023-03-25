@@ -33,6 +33,8 @@ data class BeThereDimens(
     val textFieldCornerSize: Dp = 20.dp,
     val cardCornerSize: Dp = 20.dp,
 
+    val circularProgressIndicatorSize: Dp = 80.dp,
+
     )
 
 val LocalDimens = staticCompositionLocalOf { BeThereDimens() }
