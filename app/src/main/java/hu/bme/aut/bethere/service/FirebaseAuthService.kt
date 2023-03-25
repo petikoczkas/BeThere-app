@@ -12,7 +12,6 @@ object FirebaseAuthService {
         onSuccess: () -> Unit,
         onFailure: (Exception?) -> Unit
     ) {
-
         firebaseAuth.signInWithEmailAndPassword(email, password)
             .addOnCompleteListener {
                 if (it.isSuccessful) {
@@ -21,6 +20,10 @@ object FirebaseAuthService {
                     onFailure(it.exception)
                 }
             }.await()
+    }
+
+    fun signOut(firebaseAuth: FirebaseAuth) {
+        firebaseAuth.signOut()
     }
 
     suspend fun registrate(
