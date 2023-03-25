@@ -1,11 +1,15 @@
 package hu.bme.aut.bethere.service
 
+import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
-import hu.bme.aut.bethere.data.DataOrException
+import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.User
+import hu.bme.aut.bethere.utils.Constants.EVENT_COLLECTION
 import hu.bme.aut.bethere.utils.Constants.USER_COLLECTION
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -28,24 +32,39 @@ class FirebaseStorageService @Inject constructor() {
     }
 
 
-    suspend fun getUsers(
+    fun getUsers(
         queryUsersByName: Query,
         userId: String
-    ): DataOrException<MutableList<User>, Exception> {
-        val dataOrException = DataOrException<MutableList<User>, Exception>()
-        val tmp = mutableListOf<User>()
-        var currentUser = User()
-        try {
-            queryUsersByName.get().await().map { document ->
-                if (document.id != userId) tmp.add(document.toObject(User::class.java))
-                else currentUser = document.toObject(User::class.java)
+    ): Flow<List<User>> {
+        return callbackFlow {
+            val listener = queryUsersByName.addSnapshotListener { value, e ->
+                e?.let {
+                    return@addSnapshotListener
+                }
+                value?.let {
+                    val tmp = mutableListOf<User>()
+                    for (d in it.documents) {
+                        if (d.id != userId) d.toObject(User::class.java)
+                            ?.let { doc -> tmp.add(doc) }
+                    }
+                    trySend(tmp.toList())
+                }
             }
-            tmp.add(currentUser)
-            dataOrException.data = tmp
-        } catch (e: FirebaseFirestoreException) {
-            dataOrException.e = e
+            awaitClose {
+                listener.remove()
+            }
         }
-        return dataOrException
+    }
+
+    suspend fun getCurrentUser(
+        queryUsers: Query,
+        userId: String
+    ): User {
+        var currentUser = User()
+        queryUsers.get().await().map { document ->
+            if (document.id == userId) currentUser = document.toObject(User::class.java)
+        }
+        return currentUser
     }
 
     suspend fun updateUser(
@@ -53,5 +72,36 @@ class FirebaseStorageService @Inject constructor() {
         user: User,
     ) {
         firebaseFirestore.collection(USER_COLLECTION).document(user.id).set(user).await()
+    }
+
+    fun getCurrentUserEvents(
+        firebaseFirestore: FirebaseFirestore,
+        user: User
+    ): Flow<List<Event>> {
+        return callbackFlow {
+            val listener =
+                firebaseFirestore.collection(EVENT_COLLECTION).addSnapshotListener { value, e ->
+                    e?.let {
+                        return@addSnapshotListener
+                    }
+                    value?.let {
+                        val tmp = mutableListOf<Event>()
+                        for (d in it.documents) {
+                            for (eId in user.events) {
+                                if (eId == d.id) {
+                                    d.toObject(Event::class.java)?.let { doc ->
+                                        tmp.add(doc)
+                                        Log.println(Log.INFO, "events", doc.name)
+                                    }
+                                }
+                            }
+                        }
+                        trySend(tmp.toList())
+                    }
+                }
+            awaitClose {
+                listener.remove()
+            }
+        }
     }
 }
