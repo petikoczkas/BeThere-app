@@ -3,6 +3,7 @@ package hu.bme.aut.bethere.data
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.service.FirebaseAuthService
 import hu.bme.aut.bethere.service.FirebaseStorageService
@@ -101,6 +102,19 @@ class BeThereInteractor @Inject constructor(
             firebaseFirestore = firebaseFirestore,
             user = user
         )
+
+    fun getCurrentEvent(eventId: String) =
+        firebaseStorageService.getCurrentEvent(
+            firebaseFirestore = firebaseFirestore,
+            eventId = eventId
+        )
+
+    suspend fun updateEvent(event: Event) {
+        firebaseStorageService.updateEvent(
+            firebaseFirestore = firebaseFirestore,
+            event = event
+        )
+    }
 
 }
 

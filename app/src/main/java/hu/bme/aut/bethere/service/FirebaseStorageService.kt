@@ -104,4 +104,34 @@ class FirebaseStorageService @Inject constructor() {
             }
         }
     }
+
+    fun getCurrentEvent(
+        firebaseFirestore: FirebaseFirestore,
+        eventId: String
+    ): Flow<Event> {
+        return callbackFlow {
+            val listener =
+                firebaseFirestore.collection(EVENT_COLLECTION).addSnapshotListener { value, e ->
+                    e?.let {
+                        return@addSnapshotListener
+                    }
+                    value?.let {
+                        for (d in it.documents) {
+                            if (d.id == eventId) d.toObject(Event::class.java)
+                                ?.let { doc -> trySend(doc) }
+                        }
+                    }
+                }
+            awaitClose {
+                listener.remove()
+            }
+        }
+    }
+
+    suspend fun updateEvent(
+        firebaseFirestore: FirebaseFirestore,
+        event: Event,
+    ) {
+        firebaseFirestore.collection(EVENT_COLLECTION).document(event.id).set(event).await()
+    }
 }

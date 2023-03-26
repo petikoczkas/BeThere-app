@@ -1,6 +1,7 @@
 package hu.bme.aut.bethere.ui
 
 import hu.bme.aut.bethere.data.BeThereInteractor
+import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.User
 import javax.inject.Inject
 
@@ -56,5 +57,11 @@ class BeTherePresenter @Inject constructor(
     }
 
     fun getCurrentUserEvents(user: User) = beThereInteractor.getCurrentUserEvents(user = user)
+
+    fun getCurrentEvent(eventId: String) = beThereInteractor.getCurrentEvent(eventId = eventId)
+
+    suspend fun updateEvent(event: Event) {
+        beThereInteractor.updateEvent(event = event)
+    }
 
 }
