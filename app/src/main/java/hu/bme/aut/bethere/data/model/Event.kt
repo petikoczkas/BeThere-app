@@ -1,14 +1,17 @@
 package hu.bme.aut.bethere.data.model
 
-import java.util.*
+import android.os.Parcelable
+import com.google.firebase.Timestamp
+import kotlinx.parcelize.Parcelize
 
+@Parcelize
 data class Event(
     val id: String = "",
     val name: String = "",
-    val date: Date = Date(),
+    val date: Timestamp = Timestamp.now(),
     val location: String = "",
-    val users: List<String> = mutableListOf(),
-    val messages: List<Message> = mutableListOf()
-) {
+    val users: MutableList<String> = mutableListOf(),
+    val messages: MutableList<Message> = mutableListOf()
+) : Parcelable {
     fun doesMatchSearchQuery(query: String) = name.contains(query, ignoreCase = true)
 }
