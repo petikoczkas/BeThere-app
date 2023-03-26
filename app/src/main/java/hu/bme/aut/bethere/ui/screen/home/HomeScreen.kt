@@ -70,7 +70,14 @@ fun HomeScreen(
                         items(searchedEvents) { e ->
                             EventCard(
                                 text = e.name,
-                                onClick = { navigator.navigate(EventScreenDestination) },
+                                onClick = {
+                                    navigator.navigate(
+                                        EventScreenDestination(
+                                            eventId = e.id,
+                                            currentUser = viewModel.currentUser
+                                        )
+                                    )
+                                },
                                 modifier = Modifier
                                     .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
                             )

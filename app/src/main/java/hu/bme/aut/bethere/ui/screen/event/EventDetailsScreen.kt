@@ -21,7 +21,6 @@ import androidx.compose.ui.res.stringResource
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
-import hu.bme.aut.bethere.ui.screen.destinations.EventScreenDestination
 import hu.bme.aut.bethere.ui.screen.destinations.SearchScreenDestination
 import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
@@ -113,7 +112,7 @@ fun EventDetailsScreen(navigator: DestinationsNavigator) {
             }
         }
         PrimaryButton(
-            onClick = { navigator.navigate(EventScreenDestination) },
+            onClick = { navigator.popBackStack() },
             text = stringResource(R.string.save),
             modifier = Modifier
                 .fillMaxWidth()
