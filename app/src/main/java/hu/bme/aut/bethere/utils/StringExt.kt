@@ -1,6 +1,10 @@
 package hu.bme.aut.bethere.utils
 
+import android.annotation.SuppressLint
 import android.util.Patterns
+import com.google.firebase.Timestamp
+import java.text.SimpleDateFormat
+import java.util.*
 import java.util.regex.Pattern
 
 private const val MIN_PASS_LENGTH = 8
@@ -18,4 +22,12 @@ fun String.isValidPassword(): Boolean {
 
 fun String.passwordMatches(repeated: String): Boolean {
     return this == repeated
+}
+
+@SuppressLint("SimpleDateFormat")
+fun Timestamp.toSimpleString(): String {
+    val sdf = SimpleDateFormat("yyyy.MM.dd HH:mm")
+    val milliseconds = this.seconds * 1000 + this.nanoseconds / 1000000
+    val date = Date(milliseconds)
+    return sdf.format(date).toString()
 }
