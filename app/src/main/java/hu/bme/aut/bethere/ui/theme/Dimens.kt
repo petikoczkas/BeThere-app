@@ -29,9 +29,9 @@ data class BeThereDimens(
 
     val userBoxHeight: Dp = 252.dp,
 
-    val primaryButtonCornerSize: Dp = 20.dp,
-    val textFieldCornerSize: Dp = 20.dp,
-    val cardCornerSize: Dp = 20.dp,
+    val primaryButtonCornerSize: Dp = 12.dp,
+    val textFieldCornerSize: Dp = 12.dp,
+    val cardCornerSize: Dp = 12.dp,
 
     val circularProgressIndicatorSize: Dp = 80.dp,
 
