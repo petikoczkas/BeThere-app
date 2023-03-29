@@ -88,7 +88,14 @@ fun HomeScreen(
         }
         PrimaryButton(
             text = "Add event",
-            onClick = { navigator.navigate(EventDetailsScreenDestination) },
+            onClick = {
+                navigator.navigate(
+                    EventDetailsScreenDestination(
+                        eventId = "new",
+                        currentUser = viewModel.currentUser
+                    )
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(

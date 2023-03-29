@@ -9,11 +9,8 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -69,7 +66,8 @@ fun EventScreen(
             ) {
                 Header(
                     navigator = navigator,
-                    event = event!!
+                    event = event!!,
+                    currentUser = currentUser
                 )
                 InfoBox(event = event!!)
                 LazyColumn(
@@ -90,6 +88,9 @@ fun EventScreen(
                             )
                         }
                     }
+                }
+                LaunchedEffect(Unit) {
+                    listState.animateScrollToItem(event!!.messages.size)
                 }
             }
             Row(
@@ -153,7 +154,8 @@ fun EventScreen(
 @Composable
 private fun Header(
     navigator: DestinationsNavigator,
-    event: Event
+    event: Event,
+    currentUser: User
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -177,7 +179,14 @@ private fun Header(
             modifier = Modifier.weight(5f)
         )
         IconButton(
-            onClick = { navigator.navigate(EventDetailsScreenDestination) },
+            onClick = {
+                navigator.navigate(
+                    EventDetailsScreenDestination(
+                        eventId = event.id,
+                        currentUser = currentUser
+                    )
+                )
+            },
             modifier = Modifier
                 .padding(end = MaterialTheme.beThereDimens.gapMedium)
                 .weight(1f)

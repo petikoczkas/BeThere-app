@@ -82,16 +82,18 @@ fun SearchScreen(
                 SearchList(
                     text = stringResource(R.string.your_friends),
                     users = viewModel.friends,
-                    addFriendOnClick = { },
+                    plusButtonOnClick = { },
                     modifier = modifier
                 )
             }
             SearchList(
                 text = stringResource(R.string.others),
                 users = viewModel.others,
-                addFriendOnClick = { u ->
-                    viewModel.addFriend(u)
-                    viewModel.separateUsers(searchedUsers)
+                plusButtonOnClick = { u ->
+                    if (isAddFriendClicked) {
+                        viewModel.addFriend(u)
+                        viewModel.separateUsers(searchedUsers)
+                    }
                 },
                 modifier = modifier
             )
@@ -111,7 +113,7 @@ fun SearchScreen(
 private fun SearchList(
     text: String,
     users: List<User>,
-    addFriendOnClick: (u: User) -> Unit,
+    plusButtonOnClick: (u: User) -> Unit,
     modifier: Modifier = Modifier
 ) {
     Column(
@@ -141,7 +143,7 @@ private fun SearchList(
                     modifier = Modifier
                         .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
                 ) {
-                    IconButton(onClick = { addFriendOnClick(u) }) {
+                    IconButton(onClick = { plusButtonOnClick(u) }) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_add),
                             contentDescription = null
