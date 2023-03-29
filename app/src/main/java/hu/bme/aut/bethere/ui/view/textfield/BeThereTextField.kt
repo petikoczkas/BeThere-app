@@ -63,8 +63,8 @@ fun BeThereTextField(
         },
         singleLine = true,
         enabled = enabled,
-        isError = isErrorInText,
-        label = { Text(label) },
+        isError = if (text != "") isErrorInText else false,
+        placeholder = { Text(label) },
         leadingIcon = {
             Icon(
                 painter = painterResource(id = leadingIcon),
