@@ -4,6 +4,10 @@ import android.annotation.SuppressLint
 import android.util.Patterns
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Pattern
 
@@ -30,4 +34,20 @@ fun Timestamp.toSimpleString(): String {
     val milliseconds = this.seconds * 1000 + this.nanoseconds / 1000000
     val date = Date(milliseconds)
     return sdf.format(date).toString()
+}
+
+fun toTimestamp(date: LocalDate, time: LocalTime): Timestamp {
+    var dateString = "${date.year}."
+    dateString += if (date.monthValue < 10) "0${date.monthValue}." else "${date.monthValue}."
+    dateString += if (date.dayOfMonth < 10) "0${date.dayOfMonth}" else "${date.dayOfMonth}"
+
+    var timeString = ""
+    timeString += if (time.hour < 10) "0${time.hour}:" else "${time.hour}:"
+    timeString += if (time.minute < 10) "0${time.minute}" else "${time.minute}"
+
+    val d = LocalDate.parse(dateString, DateTimeFormatter.ofPattern("yyyy.MM.dd"))
+    val t = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("HH:mm"))
+    val dTime = d.atStartOfDay(ZoneId.systemDefault()).toInstant()
+
+    return Timestamp(dTime.epochSecond + t.toSecondOfDay(), 0)
 }

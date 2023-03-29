@@ -1,6 +1,5 @@
 package hu.bme.aut.bethere.service
 
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import hu.bme.aut.bethere.data.model.Event
@@ -91,7 +90,6 @@ class FirebaseStorageService @Inject constructor() {
                                 if (eId == d.id) {
                                     d.toObject(Event::class.java)?.let { doc ->
                                         tmp.add(doc)
-                                        Log.println(Log.INFO, "events", doc.name)
                                     }
                                 }
                             }
