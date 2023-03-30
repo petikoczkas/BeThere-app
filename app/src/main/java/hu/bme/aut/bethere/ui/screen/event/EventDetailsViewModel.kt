@@ -70,13 +70,21 @@ class EventDetailsViewModel @Inject constructor(
 
 
     fun buttonOnClick() {
-
+        clearSelectedUsers()
     }
 
-    fun getEventMembers(users: List<User>, currentUser: User, eventId: String): List<User> {
-        val members = mutableListOf(currentUser)
-        for (u in users) {
-            if (u.events.contains(eventId)) members.add(u)
+    fun clearSelectedUsers() {
+        beTherePresenter.setSelectedUsersOnSearchScreen(null)
+    }
+
+    fun getEventMembers(users: List<User>?, currentUser: User, eventId: String): List<User> {
+        val members = beTherePresenter.getSelectedUsersOnSearchScreen()
+        if (members.isNotEmpty()) Log.println(Log.INFO, "tárolt adatok", members[0].name)
+        members.add(currentUser)
+        users?.let {
+            for (u in users) {
+                if (u.events.contains(eventId)) members.add(u)
+            }
         }
         return members
     }
@@ -86,7 +94,7 @@ class EventDetailsViewModel @Inject constructor(
     }
 
     fun onDateChange(date: LocalDate, time: LocalTime) {
-        Log.println(Log.INFO, "indfoosfoüa", time.hour.toString())
+        //Log.println(Log.INFO, "indfoosfoüa", time.hour.toString())
         _uiState.update {
             (_uiState.value as EventDetailsLoaded).copy(
                 eventDate = toTimestamp(

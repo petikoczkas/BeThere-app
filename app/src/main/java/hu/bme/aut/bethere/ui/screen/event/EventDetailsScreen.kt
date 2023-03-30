@@ -46,11 +46,11 @@ fun EventDetailsScreen(
     navigator: DestinationsNavigator,
     viewModel: EventDetailsViewModel = hiltViewModel(),
     eventId: String,
-    currentUser: User
+    currentUser: User,
 ) {
     val users by viewModel.users.observeAsState()
     val uiState by viewModel.uiState.collectAsState()
-
+    val eventMembers = viewModel.getEventMembers(users, currentUser, eventId)
 
     when (uiState) {
         is EventDetailsLoaded -> {
@@ -67,7 +67,10 @@ fun EventDetailsScreen(
 
                 ) {
                     IconButton(
-                        onClick = { navigator.popBackStack() },
+                        onClick = {
+                            viewModel.clearSelectedUsers()
+                            navigator.popBackStack()
+                        },
                         modifier = Modifier
                             .align(Alignment.Start)
                             .padding(start = MaterialTheme.beThereDimens.gapMedium)
@@ -97,6 +100,7 @@ fun EventDetailsScreen(
                             )
                             IconButton(
                                 onClick = {
+                                    viewModel.clearSelectedUsers()
                                     navigator.navigate(
                                         SearchScreenDestination(
                                             isAddFriendClicked = false
@@ -121,26 +125,33 @@ fun EventDetailsScreen(
                                     end = MaterialTheme.beThereDimens.gapNormal,
                                 )
                         ) {
-                            users?.let {
-                                items(
-                                    viewModel.getEventMembers(
-                                        users = users!!,
-                                        currentUser = currentUser,
-                                        eventId = eventId
-                                    )
-                                ) { u ->
-                                    UserCard(
-                                        text = u.name,
-                                        onClick = {},
-                                        modifier = Modifier
-                                            .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
-                                    ) {
-                                        IconButton(onClick = { /*TODO*/ }) {
-                                            Icon(
-                                                painter = painterResource(id = R.drawable.ic_remove),
-                                                contentDescription = null
-                                            )
-                                        }
+                            items(eventMembers) { u ->
+                                UserCard(
+                                    text = u.name,
+                                    onClick = {},
+                                    modifier = Modifier
+                                        .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
+                                ) {
+                                    IconButton(onClick = { /*TODO*/ }) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_remove),
+                                            contentDescription = null
+                                        )
+                                    }
+                                }
+                            }
+                            items(eventMembers) { u ->
+                                UserCard(
+                                    text = u.name,
+                                    onClick = {},
+                                    modifier = Modifier
+                                        .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
+                                ) {
+                                    IconButton(onClick = { /*TODO*/ }) {
+                                        Icon(
+                                            painter = painterResource(id = R.drawable.ic_remove),
+                                            contentDescription = null
+                                        )
                                     }
                                 }
                             }
