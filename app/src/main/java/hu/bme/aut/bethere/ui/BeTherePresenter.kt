@@ -1,5 +1,6 @@
 package hu.bme.aut.bethere.ui
 
+import android.util.Log
 import hu.bme.aut.bethere.data.BeThereInteractor
 import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.User
@@ -8,6 +9,17 @@ import javax.inject.Inject
 class BeTherePresenter @Inject constructor(
     private val beThereInteractor: BeThereInteractor
 ) {
+
+    fun getSelectedUsersOnSearchScreen() = beThereInteractor.selectedUsersOnSearchScreen
+    fun setSelectedUsersOnSearchScreen(user: User?){
+        if(user == null){
+            beThereInteractor.selectedUsersOnSearchScreen.clear()
+        }
+        else{
+            beThereInteractor.selectedUsersOnSearchScreen.add(user)
+            Log.println(Log.INFO, "logolok", "haloo")
+        }
+    }
     suspend fun registrate(
         email: String,
         password: String,

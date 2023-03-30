@@ -21,6 +21,8 @@ class BeThereInteractor @Inject constructor(
 
     private val queryUsers = firebaseFirestore.collection(USER_COLLECTION)
 
+    var selectedUsersOnSearchScreen = mutableListOf<User>()
+
     suspend fun registrate(
         email: String,
         password: String,
