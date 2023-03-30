@@ -8,6 +8,10 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.ui.BeTherePresenter
+import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState
+import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenInit
+import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenAddFriends
+import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenAddMembers
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -18,6 +22,9 @@ import javax.inject.Inject
 class SearchViewModel @Inject constructor(
     private val beTherePresenter: BeTherePresenter
 ) : ViewModel() {
+
+    private val _uiState = MutableStateFlow<SearchScreenUiState>(SearchScreenInit)
+    val uiState: StateFlow<SearchScreenUiState> = _uiState.asStateFlow()
 
     private val _allUser = MutableLiveData<List<User>>()
     val allUser: LiveData<List<User>> = _allUser
@@ -90,10 +97,16 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun removeUser(user: User, isFriend: Boolean){
+        if(isFriend) _friends.remove(user)
+        else _others.remove(user)
+    }
     fun addFriend(user: User) {
         viewModelScope.launch {
             try {
                 currentUser.friends.add(user.id)
+                _friends.add(user)
+                _others.remove(user)
                 beTherePresenter.updateUser(user = currentUser)
                 onSearchTextChange("")
             } catch (e: Exception) {
@@ -103,8 +116,17 @@ class SearchViewModel @Inject constructor(
         }
     }
 
+    fun addUserToSelectedUsers(user: User){
+        beTherePresenter.setSelectedUsersOnSearchScreen(user)
+    }
+
     fun handledAddFriendFailedEvent() {
         _addFriendFailedEvent.update { _addFriendFailedEvent.value.copy(isAddFriendFailed = false) }
+    }
+
+    fun setUiState(isAddFriendClicked: Boolean) {
+        if(isAddFriendClicked) _uiState.value = SearchScreenAddFriends
+        else _uiState.value = SearchScreenAddMembers
     }
 
     data class AddFriendFailure(
