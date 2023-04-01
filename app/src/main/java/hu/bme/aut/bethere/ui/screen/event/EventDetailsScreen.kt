@@ -1,5 +1,6 @@
 package hu.bme.aut.bethere.ui.screen.event
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -15,9 +16,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import com.vanpra.composematerialdialogs.MaterialDialog
@@ -28,6 +31,7 @@ import com.vanpra.composematerialdialogs.datetime.time.timepicker
 import com.vanpra.composematerialdialogs.rememberMaterialDialogState
 import hu.bme.aut.bethere.R
 import hu.bme.aut.bethere.data.model.User
+import hu.bme.aut.bethere.ui.screen.destinations.HomeScreenDestination
 import hu.bme.aut.bethere.ui.screen.destinations.SearchScreenDestination
 import hu.bme.aut.bethere.ui.screen.event.EventDetailsUiState.*
 import hu.bme.aut.bethere.ui.theme.beThereColors
@@ -36,6 +40,8 @@ import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.card.UserCard
 import hu.bme.aut.bethere.ui.view.textfield.EditTextField
+import hu.bme.aut.bethere.utils.ComposableLifecycle
+import hu.bme.aut.bethere.utils.Constants
 import hu.bme.aut.bethere.utils.toSimpleString
 import java.time.LocalDate
 import java.time.LocalTime
@@ -50,10 +56,16 @@ fun EventDetailsScreen(
 ) {
     val users by viewModel.users.observeAsState()
     val uiState by viewModel.uiState.collectAsState()
-    val eventMembers = viewModel.getEventMembers(users, currentUser, eventId)
+    val saveEventFailedEvent by viewModel.saveEventFailedEvent.collectAsState()
 
     when (uiState) {
         is EventDetailsLoaded -> {
+            ComposableLifecycle { _, event ->
+                if (event == Lifecycle.Event.ON_RESUME) {
+                    viewModel.getEventMembers(users = users, currentUser = currentUser)
+                }
+            }
+
             Column(
                 modifier = Modifier
                     .fillMaxSize(),
@@ -68,7 +80,7 @@ fun EventDetailsScreen(
                 ) {
                     IconButton(
                         onClick = {
-                            viewModel.clearSelectedUsers()
+                            viewModel.clearEventMembers()
                             navigator.popBackStack()
                         },
                         modifier = Modifier
@@ -100,7 +112,6 @@ fun EventDetailsScreen(
                             )
                             IconButton(
                                 onClick = {
-                                    viewModel.clearSelectedUsers()
                                     navigator.navigate(
                                         SearchScreenDestination(
                                             isAddFriendClicked = false
@@ -125,29 +136,18 @@ fun EventDetailsScreen(
                                     end = MaterialTheme.beThereDimens.gapNormal,
                                 )
                         ) {
-                            items(eventMembers) { u ->
+                            items(
+                                viewModel.members
+                            ) { u ->
                                 UserCard(
                                     text = u.name,
                                     onClick = {},
                                     modifier = Modifier
                                         .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
                                 ) {
-                                    IconButton(onClick = { /*TODO*/ }) {
-                                        Icon(
-                                            painter = painterResource(id = R.drawable.ic_remove),
-                                            contentDescription = null
-                                        )
-                                    }
-                                }
-                            }
-                            items(eventMembers) { u ->
-                                UserCard(
-                                    text = u.name,
-                                    onClick = {},
-                                    modifier = Modifier
-                                        .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
-                                ) {
-                                    IconButton(onClick = { /*TODO*/ }) {
+                                    IconButton(onClick = {
+                                        viewModel.removeButtonOnClick(u)
+                                    }) {
                                         Icon(
                                             painter = painterResource(id = R.drawable.ic_remove),
                                             contentDescription = null
@@ -159,8 +159,9 @@ fun EventDetailsScreen(
                     }
                 }
                 PrimaryButton(
-                    onClick = { viewModel.buttonOnClick() },
+                    onClick = { viewModel.saveButtonOnClick() },
                     text = stringResource(R.string.save),
+                    enabled = (uiState as EventDetailsLoaded).eventName.isNotEmpty() and (uiState as EventDetailsLoaded).eventLocation.isNotEmpty(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -171,11 +172,23 @@ fun EventDetailsScreen(
                         )
                 )
             }
+            if (saveEventFailedEvent.isSaveEventFailed) {
+                viewModel.handledAddFriendFailedEvent()
+                Toast.makeText(
+                    LocalContext.current,
+                    "Error saving the event",
+                    Toast.LENGTH_LONG
+                ).show()
+            }
         }
-        is EventDetails -> {
-            viewModel.setEvent(eventId = eventId)
+        is EventDetailsInit -> {
+            viewModel.setEvent(eventId = eventId, currentUser = currentUser)
         }
         is EventDetailsSaved -> {
+            if (!Constants.eventMembers.contains(currentUser.id)) navigator.popBackStack(
+                route = HomeScreenDestination,
+                inclusive = false
+            )
             navigator.popBackStack()
         }
     }
