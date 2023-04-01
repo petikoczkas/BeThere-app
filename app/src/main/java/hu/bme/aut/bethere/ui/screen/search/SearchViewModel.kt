@@ -8,10 +8,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.ui.BeTherePresenter
-import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState
-import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenInit
-import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenAddFriends
-import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenAddMembers
+import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.*
+import hu.bme.aut.bethere.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -83,7 +81,7 @@ class SearchViewModel @Inject constructor(
         allUser?.let {
             _searchedUsers.value.clear()
             for (u in it) {
-                _searchedUsers.value.add(u)
+                if (!Constants.eventMembers.contains(u.id)) _searchedUsers.value.add(u)
             }
         }
     }
@@ -117,7 +115,7 @@ class SearchViewModel @Inject constructor(
     }
 
     fun addUserToSelectedUsers(user: User){
-        beTherePresenter.setSelectedUsersOnSearchScreen(user)
+        Constants.eventMembers.add(user.id)
     }
 
     fun handledAddFriendFailedEvent() {
