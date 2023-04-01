@@ -130,6 +130,8 @@ class FirebaseStorageService @Inject constructor() {
         firebaseFirestore: FirebaseFirestore,
         event: Event,
     ) {
-        firebaseFirestore.collection(EVENT_COLLECTION).document(event.id).set(event).await()
+        if (event.users.isEmpty()) firebaseFirestore.collection(EVENT_COLLECTION).document(event.id)
+            .delete().await()
+        else firebaseFirestore.collection(EVENT_COLLECTION).document(event.id).set(event).await()
     }
 }
