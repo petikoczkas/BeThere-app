@@ -46,10 +46,10 @@ class HomeViewModel @Inject constructor(
         )
 
     init {
-        setUp()
+        getEvents()
     }
 
-    private fun setUp() {
+    fun getEvents() {
         viewModelScope.launch {
             delay(500)
             currentUser = beTherePresenter.getCurrentUser()
