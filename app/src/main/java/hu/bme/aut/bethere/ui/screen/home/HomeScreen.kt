@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
@@ -25,6 +26,7 @@ import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.card.EventCard
 import hu.bme.aut.bethere.ui.view.circularprogressindicator.BeThereProgressIndicator
 import hu.bme.aut.bethere.ui.view.textfield.SearchField
+import hu.bme.aut.bethere.utils.ComposableLifecycle
 
 @Destination
 @Composable
@@ -37,6 +39,12 @@ fun HomeScreen(
     val events by viewModel.events.observeAsState()
 
     viewModel.setSearchedEvents(events)
+
+    ComposableLifecycle { _, event ->
+        if (event == Lifecycle.Event.ON_RESUME) {
+            viewModel.getEvents()
+        }
+    }
 
     Column(
         modifier = Modifier
