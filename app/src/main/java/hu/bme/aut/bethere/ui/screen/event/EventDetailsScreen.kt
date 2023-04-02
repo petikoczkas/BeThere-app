@@ -41,7 +41,6 @@ import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.card.UserCard
 import hu.bme.aut.bethere.ui.view.textfield.EditTextField
 import hu.bme.aut.bethere.utils.ComposableLifecycle
-import hu.bme.aut.bethere.utils.Constants
 import hu.bme.aut.bethere.utils.toSimpleString
 import java.time.LocalDate
 import java.time.LocalTime
@@ -161,7 +160,7 @@ fun EventDetailsScreen(
                 PrimaryButton(
                     onClick = { viewModel.saveButtonOnClick() },
                     text = stringResource(R.string.save),
-                    enabled = (uiState as EventDetailsLoaded).eventName.isNotEmpty() and (uiState as EventDetailsLoaded).eventLocation.isNotEmpty(),
+                    enabled = (uiState as EventDetailsLoaded).name.isNotEmpty() and (uiState as EventDetailsLoaded).location.isNotEmpty(),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
@@ -185,11 +184,11 @@ fun EventDetailsScreen(
             viewModel.setEvent(eventId = eventId, currentUser = currentUser)
         }
         is EventDetailsSaved -> {
-            if (!Constants.eventMembers.contains(currentUser.id)) navigator.popBackStack(
+            if (!viewModel.members.contains(currentUser)) navigator.popBackStack(
                 route = HomeScreenDestination,
                 inclusive = false
             )
-            navigator.popBackStack()
+            else navigator.popBackStack()
         }
     }
 }
@@ -241,19 +240,19 @@ private fun Header(
             }
             Column(modifier = Modifier.weight(1f)) {
                 EditTextField(
-                    text = (uiState as EventDetailsLoaded).eventName,
+                    text = (uiState as EventDetailsLoaded).name,
                     onTextChange = viewModel::onNameChange,
                     placeHolder = { Text(text = "Name") }
                 )
                 EditTextField(
-                    text = uiState.eventDate.toSimpleString(),
+                    text = uiState.date.toSimpleString(),
                     enabled = false,
                     onTextChange = { },
                     placeHolder = { Text(text = "Date") },
                     modifier = Modifier.clickable { dateDialogState.show() }
                 )
                 EditTextField(
-                    text = uiState.eventLocation,
+                    text = uiState.location,
                     onTextChange = viewModel::onLocationChange,
                     placeHolder = { Text(text = "Location") }
                 )

@@ -1,12 +1,10 @@
 package hu.bme.aut.bethere.ui.screen.event
 
-import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.Timestamp
 import dagger.hilt.android.lifecycle.HiltViewModel
 import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.User
@@ -23,7 +21,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import java.time.LocalTime
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -62,19 +59,16 @@ class EventDetailsViewModel @Inject constructor(
                 if (eventId != "new") {
                     beTherePresenter.getCurrentEvent(eventId = eventId).collect {
                         _uiState.value = EventDetailsLoaded(
-                            eventId = it.id,
-                            eventName = it.name,
-                            eventDate = it.date,
-                            eventLocation = it.location,
+                            event = it,
+                            name = it.name,
+                            date = it.date,
+                            location = it.location
                         )
                         setEventMembers(members = it.users)
                     }
                 } else {
                     _uiState.value = EventDetailsLoaded(
-                        eventId = UUID.randomUUID().toString(),
-                        eventName = "",
-                        eventDate = Timestamp.now(),
-                        eventLocation = "",
+                        event = Event()
                     )
                     setEventMembers(members = listOf(currentUser.id))
                 }
@@ -89,14 +83,11 @@ class EventDetailsViewModel @Inject constructor(
     fun saveButtonOnClick() {
         viewModelScope.launch {
             try {
-                Log.println(Log.INFO, "masodik", Constants.eventMembers.size.toString())
-                val event = Event(
-                    id = (_uiState.value as EventDetailsLoaded).eventId,
-                    name = (_uiState.value as EventDetailsLoaded).eventName,
-                    date = (_uiState.value as EventDetailsLoaded).eventDate,
-                    location = (_uiState.value as EventDetailsLoaded).eventLocation,
-                    users = Constants.eventMembers
-                )
+                val event = (_uiState.value as EventDetailsLoaded).event
+                event.name = (_uiState.value as EventDetailsLoaded).name
+                event.date = (_uiState.value as EventDetailsLoaded).date
+                event.location = (_uiState.value as EventDetailsLoaded).location
+                event.users = Constants.eventMembers
                 beTherePresenter.updateEvent(event = event)
                 for (m in _members) {
                     if (!m.events.contains(event.id)) {
@@ -121,7 +112,6 @@ class EventDetailsViewModel @Inject constructor(
 
     fun removeButtonOnClick(user: User) {
         Constants.eventMembers.remove(user.id)
-        Log.println(Log.INFO, "elso", Constants.eventMembers.size.toString())
         _members.remove(user)
         removedUsers.add(user)
     }
@@ -147,13 +137,13 @@ class EventDetailsViewModel @Inject constructor(
     }
 
     fun onNameChange(name: String) {
-        _uiState.update { (_uiState.value as EventDetailsLoaded).copy(eventName = name) }
+        _uiState.update { (_uiState.value as EventDetailsLoaded).copy(name = name) }
     }
 
     fun onDateChange(date: LocalDate, time: LocalTime) {
         _uiState.update {
             (_uiState.value as EventDetailsLoaded).copy(
-                eventDate = toTimestamp(
+                date = toTimestamp(
                     date,
                     time
                 )
@@ -162,7 +152,7 @@ class EventDetailsViewModel @Inject constructor(
     }
 
     fun onLocationChange(location: String) {
-        _uiState.update { (_uiState.value as EventDetailsLoaded).copy(eventLocation = location) }
+        _uiState.update { (_uiState.value as EventDetailsLoaded).copy(location = location) }
     }
 
     fun handledAddFriendFailedEvent() {
