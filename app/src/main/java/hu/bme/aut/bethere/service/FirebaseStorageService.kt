@@ -1,7 +1,10 @@
 package hu.bme.aut.bethere.service
 
+import android.net.Uri
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.StorageMetadata
+import com.google.firebase.storage.StorageReference
 import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.utils.Constants.EVENT_COLLECTION
@@ -133,5 +136,24 @@ class FirebaseStorageService @Inject constructor() {
         if (event.users.isEmpty()) firebaseFirestore.collection(EVENT_COLLECTION).document(event.id)
             .delete().await()
         else firebaseFirestore.collection(EVENT_COLLECTION).document(event.id).set(event).await()
+    }
+
+    suspend fun uploadProfilePicture(
+        firebaseStorage: StorageReference,
+        userId: String,
+        imageUri: Uri,
+        onSuccess: (String) -> Unit,
+    ) {
+        val metadata = StorageMetadata.Builder()
+            .setContentType("image/jpeg")
+            .build()
+
+        firebaseStorage.child(userId).putFile(imageUri, metadata)
+            .addOnSuccessListener { taskSnapshot ->
+                val result = taskSnapshot.metadata?.reference?.downloadUrl
+                result?.addOnSuccessListener {
+                    onSuccess(it.toString())
+                }
+            }.await()
     }
 }

@@ -1,10 +1,10 @@
 package hu.bme.aut.bethere.ui
 
+import android.net.Uri
 import hu.bme.aut.bethere.data.BeThereInteractor
 import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.User
 import javax.inject.Inject
-
 class BeTherePresenter @Inject constructor(
     private val beThereInteractor: BeThereInteractor
 ) {
@@ -65,4 +65,13 @@ class BeTherePresenter @Inject constructor(
         beThereInteractor.updateEvent(event = event)
     }
 
+    suspend fun uploadProfilePicture(userId: String, imageUri: Uri, onSuccess: (String) -> Unit) {
+        beThereInteractor.uploadProfilePicture(
+            userId = userId,
+            imageUri = imageUri,
+            onSuccess = onSuccess
+        )
+    }
+
 }
+

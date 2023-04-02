@@ -1,13 +1,16 @@
 package hu.bme.aut.bethere.data
 
+import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.storage.FirebaseStorage
 import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.service.FirebaseAuthService
 import hu.bme.aut.bethere.service.FirebaseStorageService
 import hu.bme.aut.bethere.utils.Constants.NAME_PROPERTY
+import hu.bme.aut.bethere.utils.Constants.PICTURE_FOLDER
 import hu.bme.aut.bethere.utils.Constants.USER_COLLECTION
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -17,6 +20,7 @@ class BeThereInteractor @Inject constructor(
 ) {
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firebaseFirestore = FirebaseFirestore.getInstance()
+    private val firebaseStorage = FirebaseStorage.getInstance().reference.child(PICTURE_FOLDER)
     private var currentUser = firebaseAuth.currentUser
 
     private val queryUsers = firebaseFirestore.collection(USER_COLLECTION)
@@ -116,6 +120,18 @@ class BeThereInteractor @Inject constructor(
         )
     }
 
+    suspend fun uploadProfilePicture(
+        userId: String,
+        imageUri: Uri,
+        onSuccess: (String) -> Unit,
+    ) {
+        firebaseStorageService.uploadProfilePicture(
+            firebaseStorage = firebaseStorage,
+            userId = userId,
+            imageUri = imageUri,
+            onSuccess = onSuccess
+        )
+    }
 }
 
 
