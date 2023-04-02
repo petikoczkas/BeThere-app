@@ -6,8 +6,8 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class User(
     val id: String = "",
-    val name: String = "",
-    val photo: String = "",
+    var name: String = "",
+    var photo: String = "",
     val friends: MutableList<String> = mutableListOf(),
     val events: MutableList<String> = mutableListOf()
 ) : Parcelable {
