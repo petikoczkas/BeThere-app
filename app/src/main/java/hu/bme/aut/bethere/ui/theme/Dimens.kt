@@ -8,7 +8,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 data class BeThereDimens(
-    val minButtonHeight: Dp = 50.dp,
+    val minButtonHeight: Dp = 52.dp,
     val dividerThickness: Dp = 1.dp,
 
     val gapNone: Dp = 0.dp,
@@ -30,6 +30,7 @@ data class BeThereDimens(
     val userBoxHeight: Dp = 252.dp,
 
     val primaryButtonCornerSize: Dp = 12.dp,
+    val primaryButtonBorderSize: Dp = 2.dp,
     val textFieldCornerSize: Dp = 12.dp,
     val cardCornerSize: Dp = 12.dp,
 
