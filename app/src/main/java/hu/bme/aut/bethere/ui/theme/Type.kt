@@ -62,6 +62,10 @@ data class BeThereTypography(
         fontSize = 18.sp,
         letterSpacing = 0.sp
     ),
+    val placeHolderTextStyle: TextStyle = TextStyle(
+        fontFamily = ProximaNova,
+        fontWeight = FontWeight.SemiBold,
+    ),
     val registrateButtonTextStyle: TextStyle = TextStyle(
         fontFamily = ProximaNova,
         fontWeight = FontWeight.SemiBold,
