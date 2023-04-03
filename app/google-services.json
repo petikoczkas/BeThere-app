@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "599400542562",
+    "project_id": "bethere-68108",
+    "storage_bucket": "bethere-68108.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599400542562:android:aeb4b98feb97e89d583c3b",
+        "android_client_info": {
+          "package_name": "hu.bme.aut.bethere"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "599400542562-l59cb8ngj871o3ckbahl32osoms88l5k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWSoBdN8yqAB_ibpge8Q7Ulyk052g89qM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "599400542562-l59cb8ngj871o3ckbahl32osoms88l5k.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

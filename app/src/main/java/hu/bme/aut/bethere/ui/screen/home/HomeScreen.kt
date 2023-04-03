@@ -2,17 +2,20 @@ package hu.bme.aut.bethere.ui.screen.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
@@ -21,12 +24,28 @@ import hu.bme.aut.bethere.ui.screen.destinations.*
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.card.EventCard
+import hu.bme.aut.bethere.ui.view.circularprogressindicator.BeThereProgressIndicator
 import hu.bme.aut.bethere.ui.view.textfield.SearchField
+import hu.bme.aut.bethere.utils.ComposableLifecycle
 
 @Destination
 @Composable
-fun HomeScreen(navigator: DestinationsNavigator) {
-    var search by rememberSaveable { mutableStateOf("") }
+fun HomeScreen(
+    navigator: DestinationsNavigator,
+    viewModel: HomeViewModel = hiltViewModel()
+) {
+    val searchText by viewModel.searchText.collectAsState()
+    val searchedEvents by viewModel.searchedEvents.collectAsState()
+    val events by viewModel.events.observeAsState()
+
+    viewModel.setSearchedEvents(events)
+
+    ComposableLifecycle { _, event ->
+        if (event == Lifecycle.Event.ON_RESUME) {
+            viewModel.getEvents()
+        }
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -40,24 +59,51 @@ fun HomeScreen(navigator: DestinationsNavigator) {
             horizontalAlignment = Alignment.CenterHorizontally
 
         ) {
-            Header(navigator = navigator)
-            SearchField(text = search, onTextChange = { search = it }, onSearchButtonClick = {})
-            LazyColumn(
-                modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
-            ) {
-                items(3) {
-                    EventCard(
-                        text = "Event",
-                        onClick = { navigator.navigate(EventScreenDestination) },
-                        modifier = Modifier
-                            .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
-                    )
+            Header(navigator = navigator, viewModel = viewModel)
+            SearchField(
+                text = searchText,
+                onTextChange = viewModel::onSearchTextChange,
+                onSearchButtonClick = {})
+            if (events == null) {
+                BeThereProgressIndicator(modifier = Modifier.weight(weight = 1f, fill = false))
+            } else {
+                LazyColumn(
+                    modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
+                ) {
+                    if (events!!.isEmpty()) {
+                        item {
+                            Text(text = "You have no events")
+                        }
+                    } else {
+                        items(searchedEvents) { e ->
+                            EventCard(
+                                text = e.name,
+                                onClick = {
+                                    navigator.navigate(
+                                        EventScreenDestination(
+                                            eventId = e.id,
+                                            currentUser = viewModel.currentUser
+                                        )
+                                    )
+                                },
+                                modifier = Modifier
+                                    .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
+                            )
+                        }
+                    }
                 }
             }
         }
         PrimaryButton(
             text = "Add event",
-            onClick = { navigator.navigate(EventDetailsScreenDestination) },
+            onClick = {
+                navigator.navigate(
+                    EventDetailsScreenDestination(
+                        eventId = "new",
+                        currentUser = viewModel.currentUser
+                    )
+                )
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -71,13 +117,17 @@ fun HomeScreen(navigator: DestinationsNavigator) {
 }
 
 @Composable
-private fun Header(navigator: DestinationsNavigator) {
+private fun Header(
+    navigator: DestinationsNavigator,
+    viewModel: HomeViewModel
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(
             onClick = {
+                viewModel.signOut()
                 navigator.clearBackStack(NavGraphs.root)
                 navigator.navigate(SignInScreenDestination)
             },
@@ -90,7 +140,7 @@ private fun Header(navigator: DestinationsNavigator) {
         }
         Row {
             IconButton(
-                onClick = { navigator.navigate(SearchScreenDestination) },
+                onClick = { navigator.navigate(SearchScreenDestination(isAddFriendClicked = true)) },
                 modifier = Modifier.padding(end = MaterialTheme.beThereDimens.gapMedium)
             ) {
                 Icon(

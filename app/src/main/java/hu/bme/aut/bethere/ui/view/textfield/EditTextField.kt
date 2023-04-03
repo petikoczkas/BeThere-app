@@ -17,6 +17,7 @@ fun EditTextField(
     text: String,
     onTextChange: (String) -> Unit,
     modifier: Modifier = Modifier,
+    placeHolder: @Composable () -> Unit = {},
     enabled: Boolean = true,
 ) {
     val textFieldColors = TextFieldDefaults.textFieldColors(
@@ -28,10 +29,10 @@ fun EditTextField(
         backgroundColor = MaterialTheme.beThereColors.gray,
         cursorColor = MaterialTheme.beThereColors.black
     )
-
     TextField(
         value = text,
         onValueChange = onTextChange,
+        placeholder = placeHolder,
         enabled = enabled,
         modifier = modifier
             .fillMaxWidth()
