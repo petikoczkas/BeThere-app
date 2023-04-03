@@ -18,7 +18,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import hu.bme.aut.bethere.R
-import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import java.util.regex.Pattern
@@ -42,10 +41,7 @@ fun BeThereTextField(
     var isErrorInText by rememberSaveable { mutableStateOf(false) }
 
     val beThereTextFieldColors = TextFieldDefaults.textFieldColors(
-        textColor = MaterialTheme.beThereColors.black,
-        disabledIndicatorColor = MaterialTheme.beThereColors.transparent,
-        backgroundColor = MaterialTheme.beThereColors.gray,
-        cursorColor = MaterialTheme.beThereColors.black
+        backgroundColor = MaterialTheme.colors.secondary,
     )
 
     OutlinedTextField(
@@ -64,7 +60,7 @@ fun BeThereTextField(
         singleLine = true,
         enabled = enabled,
         isError = if (text != "") isErrorInText else false,
-        placeholder = { Text(label) },
+        placeholder = { Text(label, style = MaterialTheme.beThereTypography.placeHolderTextStyle) },
         leadingIcon = {
             Icon(
                 painter = painterResource(id = leadingIcon),
@@ -83,9 +79,9 @@ fun BeThereTextField(
             if (isPassword) {
                 val image: Painter =
                     if (passwordVisible) {
-                        painterResource(id = R.drawable.ic_visibility)
-                    } else {
                         painterResource(id = R.drawable.ic_visibility_off)
+                    } else {
+                        painterResource(id = R.drawable.ic_visibility)
                     }
 
                 IconButton(onClick = onPasswordVisibilityChange) {
