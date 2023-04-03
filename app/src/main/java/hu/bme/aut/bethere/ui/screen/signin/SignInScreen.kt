@@ -1,9 +1,8 @@
 package hu.bme.aut.bethere.ui.screen.signin
 
 import android.widget.Toast
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -22,7 +21,6 @@ import hu.bme.aut.bethere.ui.screen.destinations.HomeScreenDestination
 import hu.bme.aut.bethere.ui.screen.destinations.RegistrationScreenDestination
 import hu.bme.aut.bethere.ui.screen.signin.SignInUiState.SignInLoaded
 import hu.bme.aut.bethere.ui.screen.signin.SignInUiState.SignInSuccess
-import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
@@ -61,30 +59,19 @@ fun SignInScreen(
                     EmailTextField(
                         email = (uiState as SignInLoaded).email,
                         onEmailTextChange = viewModel::onEmailChange,
-                        modifier = Modifier.padding(vertical = MaterialTheme.beThereDimens.gapNormal)
+                        modifier = Modifier.padding(bottom = MaterialTheme.beThereDimens.gapVeryLarge)
                     )
                     PasswordTextField(
                         password = (uiState as SignInLoaded).password,
                         onPasswordTextChange = viewModel::onPasswordChange,
-                        modifier = Modifier.padding(vertical = MaterialTheme.beThereDimens.gapNormal)
+                        modifier = Modifier.padding(bottom = MaterialTheme.beThereDimens.gapVeryLarge)
                     )
-                    Button(
-                        onClick = { navigator.navigate(RegistrationScreenDestination) },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.beThereColors.white,
-                            contentColor = MaterialTheme.beThereColors.black
-                        ),
-                        elevation = ButtonDefaults.elevation(
-                            defaultElevation = MaterialTheme.beThereDimens.gapNone,
-                            pressedElevation = MaterialTheme.beThereDimens.gapNone,
-                            disabledElevation = MaterialTheme.beThereDimens.gapNone
-                        )
-                    ) {
-                        Text(
-                            text = stringResource(R.string.registrate),
-                            style = MaterialTheme.beThereTypography.registrateButtonTextStyle
-                        )
-                    }
+                    Text(
+                        text = stringResource(R.string.registrate),
+                        style = MaterialTheme.beThereTypography.registrateButtonTextStyle,
+                        modifier = Modifier
+                            .clickable { navigator.navigate(RegistrationScreenDestination) }
+                    )
                 }
                 PrimaryButton(
                     onClick = { viewModel.buttonOnClick() },
@@ -92,7 +79,7 @@ fun SignInScreen(
                     enabled = viewModel.isButtonEnabled(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = MaterialTheme.beThereDimens.gapLarge),
+                        .padding(bottom = MaterialTheme.beThereDimens.gapNormal),
                 )
 
                 if (signInFailedEvent.isLoginFailed) {
