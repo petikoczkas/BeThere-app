@@ -15,7 +15,8 @@ fun PasswordTextField(
     password: String,
     onPasswordTextChange: (String) -> Unit,
     modifier: Modifier = Modifier,
-    isPasswordReg: Boolean = false,
+    isPasswordAgain: Boolean = false,
+    firstPassword: String = "",
     label: String = stringResource(id = R.string.password),
 ) {
     var passwordVisible by rememberSaveable { mutableStateOf(false) }
@@ -26,7 +27,8 @@ fun PasswordTextField(
         label = label,
         leadingIcon = R.drawable.ic_password,
         isPassword = true,
-        isPasswordReg = isPasswordReg,
+        isPasswordAgain = isPasswordAgain,
+        firstPassword = firstPassword,
         passwordVisible = passwordVisible,
         onPasswordVisibilityChange = { passwordVisible = !passwordVisible },
         keyBoardType = KeyboardType.Password,
