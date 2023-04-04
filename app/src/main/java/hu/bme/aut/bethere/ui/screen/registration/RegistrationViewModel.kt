@@ -63,6 +63,7 @@ class RegistrationViewModel @Inject constructor(
             or (_uiState.value as RegistrationLoaded).lastName.isBlank()
             or !(_uiState.value as RegistrationLoaded).password.isValidPassword()
             or !(_uiState.value as RegistrationLoaded).passwordAgain.isValidPassword()
+            or !(_uiState.value as RegistrationLoaded).password.passwordMatches((_uiState.value as RegistrationLoaded).passwordAgain)
         ) return false
         return true
     }
@@ -70,7 +71,7 @@ class RegistrationViewModel @Inject constructor(
     fun buttonOnClick() {
         val email = (_uiState.value as RegistrationLoaded).email
         val password = (_uiState.value as RegistrationLoaded).password
-        if ((_uiState.value as RegistrationLoaded).password.passwordMatches((_uiState.value as RegistrationLoaded).passwordAgain)) {
+        try {
             viewModelScope.launch {
                 beTherePresenter.registrate(
                     email = email,
@@ -87,10 +88,10 @@ class RegistrationViewModel @Inject constructor(
                     }
                 )
             }
-        } else {
+        } catch (e: Exception) {
             _registrationFailedEvent.value = RegistrationFailure(
                 isRegistrationFailed = true,
-                exception = Exception("The two passwords are not the same! Try again!")
+                exception = e
             )
         }
     }
