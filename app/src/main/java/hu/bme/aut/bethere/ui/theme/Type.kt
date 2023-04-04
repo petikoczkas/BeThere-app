@@ -24,7 +24,7 @@ val Typography = Typography(
     body1 = TextStyle(
         fontFamily = ProximaNova,
         fontWeight = FontWeight.Normal,
-        fontSize = 18.sp
+        fontSize = 20.sp
     )
 )
 
@@ -32,7 +32,7 @@ data class BeThereTypography(
     val titleTextStyle: TextStyle = TextStyle(
         fontFamily = ProximaNova,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 56.sp,
+        fontSize = 42.sp,
         textAlign = TextAlign.Center
     ),
     val eventTitleTextStyle: TextStyle = TextStyle(
@@ -59,12 +59,13 @@ data class BeThereTypography(
     val primaryButtonTextStyle: TextStyle = TextStyle(
         fontFamily = ProximaNova,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp,
+        fontSize = 20.sp,
         letterSpacing = 0.sp
     ),
     val placeHolderTextStyle: TextStyle = TextStyle(
         fontFamily = ProximaNova,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp
     ),
     val registrateButtonTextStyle: TextStyle = TextStyle(
         fontFamily = ProximaNova,
@@ -77,6 +78,16 @@ data class BeThereTypography(
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
     ),
+    val passwordCheckerTitleTextStyle: TextStyle = TextStyle(
+        fontFamily = ProximaNova,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp,
+    ),
+    val passwordCheckerDescriptionTextStyle: TextStyle = TextStyle(
+        fontFamily = ProximaNova,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp,
+    )
 )
 
 val LocalTypography = staticCompositionLocalOf { BeThereTypography() }
