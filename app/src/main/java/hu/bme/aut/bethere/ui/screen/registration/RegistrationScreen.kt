@@ -27,6 +27,7 @@ import hu.bme.aut.bethere.ui.screen.registration.RegistrationUiState.Registratio
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
+import hu.bme.aut.bethere.ui.view.checker.PasswordChecker
 import hu.bme.aut.bethere.ui.view.textfield.BeThereTextField
 import hu.bme.aut.bethere.ui.view.textfield.EmailTextField
 import hu.bme.aut.bethere.ui.view.textfield.PasswordTextField
@@ -38,7 +39,6 @@ fun RegistrationScreen(
     viewModel: RegistrationViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-
     val registrationFailedEvent by viewModel.registrationFailedEvent.collectAsState()
 
     when (uiState) {
@@ -52,32 +52,46 @@ fun RegistrationScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally
-
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
-                    IconButton(
-                        onClick = { navigator.popBackStack() },
+                    Row(
                         modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(start = MaterialTheme.beThereDimens.gapMedium)
+                            .fillMaxWidth()
+                            .padding(vertical = MaterialTheme.beThereDimens.gapVeryVeryLarge),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_back),
-                            contentDescription = null
+                        IconButton(
+                            onClick = { navigator.popBackStack() },
+                            modifier = Modifier
+                                .padding(start = MaterialTheme.beThereDimens.gapMedium)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_arrow_back),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.primary
+                            )
+                        }
+                        Text(
+                            text = stringResource(R.string.registration),
+                            style = MaterialTheme.beThereTypography.titleTextStyle,
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(
+                                    height = MaterialTheme.beThereDimens.gapVeryTiny,
+                                    width = MaterialTheme.beThereDimens.gapVeryVeryLarge
+                                )
                         )
                     }
-                    Text(
-                        text = stringResource(R.string.registration),
-                        style = MaterialTheme.beThereTypography.titleTextStyle,
-                        modifier = Modifier.padding(
-                            top = MaterialTheme.beThereDimens.gapMedium,
-                            bottom = MaterialTheme.beThereDimens.gapVeryVeryLarge,
-                        )
-                    )
                     EmailTextField(
                         email = (uiState as RegistrationLoaded).email,
                         onEmailTextChange = viewModel::onEmailChange,
-                        modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
+                        modifier = Modifier.padding(
+                            start = MaterialTheme.beThereDimens.gapNormal,
+                            end = MaterialTheme.beThereDimens.gapNormal,
+                            bottom = MaterialTheme.beThereDimens.gapLarge
+                        )
                     )
                     BeThereTextField(
                         text = (uiState as RegistrationLoaded).firstName,
@@ -85,7 +99,11 @@ fun RegistrationScreen(
                         label = stringResource(id = R.string.first_name),
                         leadingIcon = R.drawable.ic_account_circle,
                         keyBoardType = KeyboardType.Text,
-                        modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
+                        modifier = Modifier.padding(
+                            start = MaterialTheme.beThereDimens.gapNormal,
+                            end = MaterialTheme.beThereDimens.gapNormal,
+                            bottom = MaterialTheme.beThereDimens.gapLarge
+                        )
                     )
                     BeThereTextField(
                         text = (uiState as RegistrationLoaded).lastName,
@@ -93,20 +111,38 @@ fun RegistrationScreen(
                         label = stringResource(id = R.string.last_name),
                         leadingIcon = R.drawable.ic_account_circle,
                         keyBoardType = KeyboardType.Text,
-                        modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
+                        modifier = Modifier.padding(
+                            start = MaterialTheme.beThereDimens.gapNormal,
+                            end = MaterialTheme.beThereDimens.gapNormal,
+                            bottom = MaterialTheme.beThereDimens.gapLarge
+                        )
                     )
                     PasswordTextField(
                         password = (uiState as RegistrationLoaded).password,
                         onPasswordTextChange = viewModel::onPasswordChange,
-                        isPasswordReg = true,
-                        modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
+                        isPasswordAgain = false,
+                        modifier = Modifier.padding(
+                            start = MaterialTheme.beThereDimens.gapNormal,
+                            end = MaterialTheme.beThereDimens.gapNormal,
+                            bottom = MaterialTheme.beThereDimens.gapMedium
+                        )
+                    )
+                    PasswordChecker(
+                        password = (uiState as RegistrationLoaded).password,
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(start = MaterialTheme.beThereDimens.gapLarge)
                     )
                     PasswordTextField(
                         password = (uiState as RegistrationLoaded).passwordAgain,
                         onPasswordTextChange = viewModel::onPasswordAgainChange,
-                        isPasswordReg = true,
+                        isPasswordAgain = true,
+                        firstPassword = (uiState as RegistrationLoaded).password,
                         label = stringResource(id = R.string.password_again),
-                        modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
+                        modifier = Modifier.padding(
+                            horizontal = MaterialTheme.beThereDimens.gapNormal,
+                            vertical = MaterialTheme.beThereDimens.gapLarge,
+                        )
                     )
                 }
                 PrimaryButton(
@@ -116,8 +152,9 @@ fun RegistrationScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(
-                            vertical = MaterialTheme.beThereDimens.gapLarge,
-                            horizontal = MaterialTheme.beThereDimens.gapNormal
+                            start = MaterialTheme.beThereDimens.gapNormal,
+                            end = MaterialTheme.beThereDimens.gapNormal,
+                            bottom = MaterialTheme.beThereDimens.gapNormal
                         )
                 )
                 if (registrationFailedEvent.isRegistrationFailed) {
