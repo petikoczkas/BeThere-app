@@ -59,12 +59,12 @@ fun SignInScreen(
                     EmailTextField(
                         email = (uiState as SignInLoaded).email,
                         onEmailTextChange = viewModel::onEmailChange,
-                        modifier = Modifier.padding(bottom = MaterialTheme.beThereDimens.gapVeryLarge)
+                        modifier = Modifier.padding(bottom = MaterialTheme.beThereDimens.gapLarge)
                     )
                     PasswordTextField(
                         password = (uiState as SignInLoaded).password,
                         onPasswordTextChange = viewModel::onPasswordChange,
-                        modifier = Modifier.padding(bottom = MaterialTheme.beThereDimens.gapVeryLarge)
+                        modifier = Modifier.padding(bottom = MaterialTheme.beThereDimens.gapLarge)
                     )
                     Text(
                         text = stringResource(R.string.registrate),
