@@ -15,9 +15,10 @@ data class BeThereColors(
     val darkGray: Color = Color.Gray,
     val transparent: Color = Color.Transparent,
 
+    val white: Color = Color(0xFFFFFFFF),
     val blue: Color = Color(0xFF3C4D74),
     val lightBlue: Color = Color(0xFFE4E8F1),
-    val white: Color = Color(0xFFFFFFFF),
+    val lightBluishGray: Color = Color(0xFF636471),
 
     val darkBlue: Color = Color(0xFF1F2129),
     val darkLightBlue: Color = Color(0xFF7388B0),
@@ -31,8 +32,9 @@ data class BeThereColors(
     val lightColors: Colors = lightColors(
         primary = blue,
         onPrimary = white,
+        primaryVariant = blue.copy(alpha = 0.6F),
         secondary = lightBlue,
-        onSecondary = darkBlue,
+        onSecondary = lightBluishGray,
         background = white,
         onBackground = darkBlue,
         error = red,
