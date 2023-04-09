@@ -14,6 +14,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import com.ramcosta.composedestinations.annotation.Destination
@@ -54,7 +55,6 @@ fun HomeScreen(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = MaterialTheme.beThereDimens.gapNormal)
                 .weight(1f),
             horizontalAlignment = Alignment.CenterHorizontally
 
@@ -63,7 +63,8 @@ fun HomeScreen(
             SearchField(
                 text = searchText,
                 onTextChange = viewModel::onSearchTextChange,
-                onSearchButtonClick = {})
+                placeholder = stringResource(R.string.search_event_placeholder)
+            )
             if (events == null) {
                 BeThereProgressIndicator(modifier = Modifier.weight(weight = 1f, fill = false))
             } else {
@@ -72,7 +73,7 @@ fun HomeScreen(
                 ) {
                     if (events!!.isEmpty()) {
                         item {
-                            Text(text = "You have no events")
+                            Text(text = stringResource(R.string.no_events))
                         }
                     } else {
                         items(searchedEvents) { e ->
@@ -95,7 +96,7 @@ fun HomeScreen(
             }
         }
         PrimaryButton(
-            text = "Add event",
+            text = stringResource(R.string.new_event),
             onClick = {
                 navigator.navigate(
                     EventDetailsScreenDestination(
@@ -108,9 +109,8 @@ fun HomeScreen(
                 .fillMaxWidth()
                 .padding(
                     start = MaterialTheme.beThereDimens.gapNormal,
-                    top = MaterialTheme.beThereDimens.gapNormal,
                     end = MaterialTheme.beThereDimens.gapNormal,
-                    bottom = MaterialTheme.beThereDimens.gapLarge,
+                    bottom = MaterialTheme.beThereDimens.gapNormal,
                 )
         )
     }
@@ -122,7 +122,9 @@ private fun Header(
     viewModel: HomeViewModel
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = MaterialTheme.beThereDimens.gapVeryLarge),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(
@@ -135,7 +137,8 @@ private fun Header(
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_logout),
-                contentDescription = null
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary
             )
         }
         Row {
@@ -145,7 +148,8 @@ private fun Header(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_person_add),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.primary
                 )
             }
             IconButton(
@@ -154,7 +158,8 @@ private fun Header(
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.ic_settings),
-                    contentDescription = null
+                    contentDescription = null,
+                    tint = MaterialTheme.colors.primary
                 )
             }
         }
