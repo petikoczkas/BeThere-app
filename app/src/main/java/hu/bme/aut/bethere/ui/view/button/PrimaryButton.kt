@@ -3,7 +3,7 @@ package hu.bme.aut.bethere.ui.view.button
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
@@ -36,7 +36,7 @@ fun PrimaryButton(
     OutlinedButton(
         onClick = onClick,
         interactionSource = interactionSource,
-        modifier = modifier.heightIn(min = MaterialTheme.beThereDimens.minButtonHeight),
+        modifier = modifier.height(MaterialTheme.beThereDimens.minButtonHeight),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = backgroundColor,
             disabledBackgroundColor = MaterialTheme.colors.primaryVariant,
