@@ -33,4 +33,5 @@
     <string name="cancel" tools:ignore="ButtonCase">CANCEL</string>
     <string name="pick_date">Pick a date</string>
     <string name="pick_time">Pick a time</string>
+    <string name="settings">Settings</string>
 </resources>
