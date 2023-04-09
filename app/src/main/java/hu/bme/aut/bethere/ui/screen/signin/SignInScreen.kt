@@ -54,7 +54,7 @@ fun SignInScreen(
                     Text(
                         text = stringResource(R.string.sign_in),
                         style = MaterialTheme.beThereTypography.titleTextStyle,
-                        modifier = Modifier.padding(vertical = MaterialTheme.beThereDimens.gapVeryVeryLarge)
+                        modifier = Modifier.padding(vertical = MaterialTheme.beThereDimens.gapVeryLarge)
                     )
                     EmailTextField(
                         email = (uiState as SignInLoaded).email,
