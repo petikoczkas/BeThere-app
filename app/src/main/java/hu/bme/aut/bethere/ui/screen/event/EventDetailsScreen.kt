@@ -1,12 +1,9 @@
 package hu.bme.aut.bethere.ui.screen.event
 
 import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.MaterialTheme
@@ -15,7 +12,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -34,12 +30,11 @@ import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.ui.screen.destinations.HomeScreenDestination
 import hu.bme.aut.bethere.ui.screen.destinations.SearchScreenDestination
 import hu.bme.aut.bethere.ui.screen.event.EventDetailsUiState.*
-import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.card.UserCard
-import hu.bme.aut.bethere.ui.view.textfield.EditTextField
+import hu.bme.aut.bethere.ui.view.textfield.OutlinedEditTextField
 import hu.bme.aut.bethere.utils.ComposableLifecycle
 import hu.bme.aut.bethere.utils.toSimpleString
 import java.time.LocalDate
@@ -77,18 +72,34 @@ fun EventDetailsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    IconButton(
-                        onClick = {
-                            viewModel.clearEventMembers()
-                            navigator.popBackStack()
-                        },
+                    Row(
                         modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(start = MaterialTheme.beThereDimens.gapMedium)
+                            .fillMaxWidth()
+                            .padding(top = MaterialTheme.beThereDimens.gapVeryLarge),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_back),
-                            contentDescription = null
+                        IconButton(
+                            onClick = { navigator.popBackStack() },
+                            modifier = Modifier
+                                .padding(start = MaterialTheme.beThereDimens.gapMedium)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_arrow_back),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.primary
+                            )
+                        }
+                        Text(
+                            text = stringResource(R.string.edit_event),
+                            style = MaterialTheme.beThereTypography.titleTextStyle,
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(
+                                    height = MaterialTheme.beThereDimens.gapVeryTiny,
+                                    width = MaterialTheme.beThereDimens.gapVeryVeryLarge
+                                )
                         )
                     }
                     Header(uiState = uiState, viewModel = viewModel)
@@ -103,8 +114,8 @@ fun EventDetailsScreen(
                             verticalAlignment = Alignment.Bottom
                         ) {
                             Text(
-                                text = "Members",
-                                style = MaterialTheme.beThereTypography.descriptionTextStyle,
+                                text = stringResource(R.string.members),
+                                style = MaterialTheme.beThereTypography.memberTitleTextStyle,
                                 modifier = Modifier.padding(
                                     start = MaterialTheme.beThereDimens.gapNormal,
                                 )
@@ -124,6 +135,7 @@ fun EventDetailsScreen(
                                 Icon(
                                     painter = painterResource(id = R.drawable.ic_person_add),
                                     contentDescription = null,
+                                    tint = MaterialTheme.colors.primary
                                 )
                             }
                         }
@@ -140,7 +152,7 @@ fun EventDetailsScreen(
                             ) { u ->
                                 UserCard(
                                     text = u.name,
-                                    onClick = {},
+                                    photo = u.photo,
                                     modifier = Modifier
                                         .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
                                 ) {
@@ -208,96 +220,78 @@ private fun Header(
     val dateDialogState = rememberMaterialDialogState()
     val timeDialogState = rememberMaterialDialogState()
 
-    Box(
+    OutlinedEditTextField(
+        text = (uiState as EventDetailsLoaded).name,
+        onTextChange = viewModel::onNameChange,
+        placeholder = stringResource(R.string.name_of_event),
+        modifier = Modifier.padding(
+            start = MaterialTheme.beThereDimens.gapNormal,
+            top = MaterialTheme.beThereDimens.gapNormal,
+            end = MaterialTheme.beThereDimens.gapNormal,
+            bottom = MaterialTheme.beThereDimens.gapMedium
+
+        )
+    )
+    OutlinedEditTextField(
+        text = uiState.date.toSimpleString(),
+        onTextChange = {},
+        placeholder = stringResource(R.string.time_and_date_placeholder),
+        enabled = false,
+        onClick = { dateDialogState.show() },
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(MaterialTheme.beThereDimens.gapNormal)
-            .clip(RoundedCornerShape(MaterialTheme.beThereDimens.textFieldCornerSize))
-            .background(MaterialTheme.beThereColors.gray)
+            .padding(
+                horizontal = MaterialTheme.beThereDimens.gapNormal,
+                vertical = MaterialTheme.beThereDimens.gapMedium
+            )
+    )
+    OutlinedEditTextField(
+        text = uiState.location,
+        onTextChange = viewModel::onLocationChange,
+        placeholder = stringResource(R.string.location_placeholder),
+        modifier = Modifier.padding(
+            horizontal = MaterialTheme.beThereDimens.gapNormal,
+            vertical = MaterialTheme.beThereDimens.gapMedium
+        )
+    )
+    MaterialDialog(
+        dialogState = dateDialogState,
+        buttons = {
+            positiveButton(text = stringResource(R.string.ok)) {
+                timeDialogState.show()
+            }
+            negativeButton(text = stringResource(R.string.cancel))
+        }
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(MaterialTheme.beThereDimens.gapNormal),
-            horizontalArrangement = Arrangement.SpaceAround
+        datepicker(
+            initialDate = pickedDate,
+            title = stringResource(R.string.pick_date),
+            colors = DatePickerDefaults.colors(),
+            allowedDateValidator = {
+                it >= LocalDate.now()
+            }
         ) {
-            Column(modifier = Modifier.weight(1f)) {
-                EditTextField(
-                    text = "Name:",
-                    onTextChange = {},
-                    enabled = false
-                )
-                EditTextField(
-                    text = "Time and date:",
-                    onTextChange = {},
-                    enabled = false,
-                )
-                EditTextField(
-                    text = "Location:",
-                    onTextChange = {},
-                    enabled = false,
-                )
-            }
-            Column(modifier = Modifier.weight(1f)) {
-                EditTextField(
-                    text = (uiState as EventDetailsLoaded).name,
-                    onTextChange = viewModel::onNameChange,
-                    placeHolder = { Text(text = "Name") }
-                )
-                EditTextField(
-                    text = uiState.date.toSimpleString(),
-                    enabled = false,
-                    onTextChange = { },
-                    placeHolder = { Text(text = "Date") },
-                    modifier = Modifier.clickable { dateDialogState.show() }
-                )
-                EditTextField(
-                    text = uiState.location,
-                    onTextChange = viewModel::onLocationChange,
-                    placeHolder = { Text(text = "Location") }
-                )
-            }
+            pickedDate = it
         }
-        MaterialDialog(
-            dialogState = dateDialogState,
-            buttons = {
-                positiveButton(text = "OK") {
-                    timeDialogState.show()
-                }
-                negativeButton(text = "CANCEL")
+    }
+    val timeRange =
+        if (pickedDate == LocalDate.now()) LocalTime.now()..LocalTime.MAX else LocalTime.MIN..LocalTime.MAX
+    MaterialDialog(
+        dialogState = timeDialogState,
+        buttons = {
+            positiveButton(text = stringResource(R.string.ok)) {
+                viewModel.onDateChange(pickedDate, pickedTime)
             }
-        ) {
-            datepicker(
-                initialDate = pickedDate,
-                title = "Pick a date",
-                colors = DatePickerDefaults.colors(),
-                allowedDateValidator = {
-                    it >= LocalDate.now()
-                }
-            ) {
-                pickedDate = it
-            }
+            negativeButton(text = stringResource(R.string.cancel))
         }
-        val timeRange =
-            if (pickedDate == LocalDate.now()) LocalTime.now()..LocalTime.MAX else LocalTime.MIN..LocalTime.MAX
-        MaterialDialog(
-            dialogState = timeDialogState,
-            buttons = {
-                positiveButton(text = "OK") {
-                    viewModel.onDateChange(pickedDate, pickedTime)
-                }
-                negativeButton(text = "CANCEL")
-            }
+    ) {
+        timepicker(
+            initialTime = pickedTime,
+            title = stringResource(R.string.pick_time),
+            is24HourClock = true,
+            colors = TimePickerDefaults.colors(),
+            timeRange = timeRange
         ) {
-            timepicker(
-                initialTime = pickedTime,
-                title = "Pick a date",
-                is24HourClock = true,
-                colors = TimePickerDefaults.colors(),
-                timeRange = timeRange
-            ) {
-                pickedTime = it
-            }
+            pickedTime = it
         }
     }
 }

@@ -44,6 +44,7 @@ class EventDetailsViewModel @Inject constructor(
     val saveEventFailedEvent = _saveEventFailedEvent.asStateFlow()
 
     init {
+        clearEventMembers()
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 beTherePresenter.getUsers().collect {
@@ -116,7 +117,7 @@ class EventDetailsViewModel @Inject constructor(
         removedUsers.add(user)
     }
 
-    fun clearEventMembers() {
+    private fun clearEventMembers() {
         Constants.eventMembers.clear()
     }
 
