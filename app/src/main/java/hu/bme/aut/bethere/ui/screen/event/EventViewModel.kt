@@ -65,6 +65,15 @@ class EventViewModel @Inject constructor(
         return ""
     }
 
+    fun findUserProfileById(id: String, users: List<User>?): String {
+        users?.let {
+            for (u in it) {
+                if (u.id == id) return u.photo
+            }
+        }
+        return ""
+    }
+
     fun onMessageTextChange(text: String) {
         _messageText.value = text
     }
