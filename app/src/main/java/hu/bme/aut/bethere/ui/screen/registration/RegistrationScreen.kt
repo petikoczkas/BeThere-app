@@ -57,7 +57,7 @@ fun RegistrationScreen(
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = MaterialTheme.beThereDimens.gapVeryVeryLarge),
+                            .padding(vertical = MaterialTheme.beThereDimens.gapVeryLarge),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
