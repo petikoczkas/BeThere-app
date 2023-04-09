@@ -124,7 +124,7 @@ private fun Header(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = MaterialTheme.beThereDimens.gapVeryLarge),
+            .padding(top = MaterialTheme.beThereDimens.gapVeryLarge + MaterialTheme.beThereDimens.gapMedium),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         IconButton(
