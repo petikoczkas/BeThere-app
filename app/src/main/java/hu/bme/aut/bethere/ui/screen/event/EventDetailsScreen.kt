@@ -1,6 +1,5 @@
 package hu.bme.aut.bethere.ui.screen.event
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,7 +11,6 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -34,6 +32,7 @@ import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.card.UserCard
+import hu.bme.aut.bethere.ui.view.dialog.BeThereAlertDialog
 import hu.bme.aut.bethere.ui.view.textfield.OutlinedEditTextField
 import hu.bme.aut.bethere.utils.ComposableLifecycle
 import hu.bme.aut.bethere.utils.toSimpleString
@@ -184,12 +183,11 @@ fun EventDetailsScreen(
                 )
             }
             if (saveEventFailedEvent.isSaveEventFailed) {
-                viewModel.handledAddFriendFailedEvent()
-                Toast.makeText(
-                    LocalContext.current,
-                    "Error saving the event",
-                    Toast.LENGTH_LONG
-                ).show()
+                BeThereAlertDialog(
+                    title = stringResource(R.string.save_event_failed),
+                    description = saveEventFailedEvent.exception?.message.toString(),
+                    onDismiss = { viewModel.handledAddFriendFailedEvent() }
+                )
             }
         }
         is EventDetailsInit -> {

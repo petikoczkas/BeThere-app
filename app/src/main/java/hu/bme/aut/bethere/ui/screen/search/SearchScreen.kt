@@ -1,6 +1,5 @@
 package hu.bme.aut.bethere.ui.screen.search
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -11,7 +10,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -23,6 +21,7 @@ import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenInit
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.card.UserCard
+import hu.bme.aut.bethere.ui.view.dialog.BeThereAlertDialog
 import hu.bme.aut.bethere.ui.view.textfield.SearchField
 
 @Destination
@@ -100,12 +99,12 @@ fun SearchScreen(
                 }
             }
             if (addFriendFailedEvent.isAddFriendFailed) {
-                viewModel.handledAddFriendFailedEvent()
-                Toast.makeText(
-                    LocalContext.current,
-                    "Error adding a friend",
-                    Toast.LENGTH_LONG
-                ).show()
+                BeThereAlertDialog(
+                    title = if (isAddFriendClicked) stringResource(R.string.add_friend_failed)
+                    else stringResource(R.string.add_user_to_event_failed),
+                    description = addFriendFailedEvent.exception?.message.toString(),
+                    onDismiss = { viewModel.handledAddFriendFailedEvent() }
+                )
             }
         }
     }

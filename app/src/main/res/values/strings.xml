@@ -13,7 +13,6 @@
     <string name="your_friends">Your Friends</string>
     <string name="others">Others</string>
     <string name="message_placeholder" tools:ignore="TypographyEllipsis">Type a message...</string>
-    <string name="sign_in_error">You have entered an invalid email or password!</string>
     <string name="succesful_registration">Successful Registration</string>
     <string name="next">Next</string>
     <string name="search_event_placeholder">Search for an event</string>
@@ -34,4 +33,13 @@
     <string name="pick_date">Pick a date</string>
     <string name="pick_time">Pick a time</string>
     <string name="settings">Settings</string>
+    <string name="login_failed">Login Failed</string>
+    <string name="registration_failed">Registration Failed</string>
+    <string name="send_message_failed">Failed To Send The Message</string>
+    <string name="save_event_failed">Failed To Save The Event</string>
+    <string name="add_friend_failed">Failed To Add Friend</string>
+    <string name="add_user_to_event_failed">Failed To Add User To Event</string>
+    <string name="update_profile_failed">Failed To Update Your Profile</string>
+    <string name="saving" tools:ignore="TypographyEllipsis">Saving...</string>
+    <string name="signing_in" tools:ignore="TypographyEllipsis">Signing in...</string>
 </resources>

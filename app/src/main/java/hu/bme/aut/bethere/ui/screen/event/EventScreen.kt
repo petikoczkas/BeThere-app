@@ -1,20 +1,19 @@
 package hu.bme.aut.bethere.ui.screen.event
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,9 +27,8 @@ import hu.bme.aut.bethere.ui.screen.destinations.EventDetailsScreenDestination
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.card.ProfilePicture
+import hu.bme.aut.bethere.ui.view.dialog.BeThereAlertDialog
 import hu.bme.aut.bethere.utils.toSimpleString
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Destination
 @Composable
@@ -46,8 +44,6 @@ fun EventScreen(
     val users by viewModel.users.observeAsState()
     val sendMessageFailedEvent by viewModel.sendMessageFailedEvent.collectAsState()
 
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -70,26 +66,23 @@ fun EventScreen(
                 )
                 InfoBox(event = event!!)
                 LazyColumn(
-                    state = listState,
+                    reverseLayout = true,
                     modifier = Modifier
+                        .navigationBarsPadding()
+                        .imePadding()
                         .padding(
                             horizontal = MaterialTheme.beThereDimens.gapNormal,
                             vertical = MaterialTheme.beThereDimens.gapMedium
                         )
                 ) {
-                    event?.let {
-                        items(event!!.messages) {
-                            MessageCard(
-                                viewModel = viewModel,
-                                messageItem = it,
-                                currentUser = currentUser,
-                                users = users
-                            )
-                        }
+                    items(event!!.messages.reversed()) {
+                        MessageCard(
+                            viewModel = viewModel,
+                            messageItem = it,
+                            currentUser = currentUser,
+                            users = users
+                        )
                     }
-                }
-                LaunchedEffect(Unit) {
-                    listState.animateScrollToItem(event!!.messages.size)
                 }
             }
             Row(
@@ -125,10 +118,6 @@ fun EventScreen(
                             event = event!!,
                             text = messageText
                         )
-                        coroutineScope.launch {
-                            delay(200)
-                            listState.animateScrollToItem(event!!.messages.size)
-                        }
                     }
                 ) {
                     Icon(
@@ -140,12 +129,11 @@ fun EventScreen(
             }
         }
         if (sendMessageFailedEvent.isSendMessageFailed) {
-            viewModel.handledSendMessageFailedEvent()
-            Toast.makeText(
-                LocalContext.current,
-                "Error sending a message",
-                Toast.LENGTH_LONG
-            ).show()
+            BeThereAlertDialog(
+                title = stringResource(R.string.send_message_failed),
+                description = sendMessageFailedEvent.exception?.message.toString(),
+                onDismiss = { viewModel.handledSendMessageFailedEvent() }
+            )
         }
     }
 }

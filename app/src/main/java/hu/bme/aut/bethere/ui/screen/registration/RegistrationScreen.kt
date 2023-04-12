@@ -1,6 +1,5 @@
 package hu.bme.aut.bethere.ui.screen.registration
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -13,7 +12,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -28,6 +26,7 @@ import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.checker.PasswordChecker
+import hu.bme.aut.bethere.ui.view.dialog.BeThereAlertDialog
 import hu.bme.aut.bethere.ui.view.textfield.BeThereTextField
 import hu.bme.aut.bethere.ui.view.textfield.EmailTextField
 import hu.bme.aut.bethere.ui.view.textfield.PasswordTextField
@@ -158,12 +157,11 @@ fun RegistrationScreen(
                         )
                 )
                 if (registrationFailedEvent.isRegistrationFailed) {
-                    viewModel.handledRegistrationFailedEvent()
-                    Toast.makeText(
-                        LocalContext.current,
-                        registrationFailedEvent.exception?.message,
-                        Toast.LENGTH_LONG
-                    ).show()
+                    BeThereAlertDialog(
+                        title = stringResource(R.string.registration_failed),
+                        description = registrationFailedEvent.exception?.message.toString(),
+                        onDismiss = { viewModel.handledRegistrationFailedEvent() }
+                    )
                 }
             }
         }

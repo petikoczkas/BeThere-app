@@ -45,6 +45,7 @@ data class BeThereDimens(
     val messageCardImageSize: Dp = 20.dp,
 
     val circularProgressIndicatorSize: Dp = 80.dp,
+    val dialogProgressIndicatorSize: Dp = 32.dp,
 
     )
 

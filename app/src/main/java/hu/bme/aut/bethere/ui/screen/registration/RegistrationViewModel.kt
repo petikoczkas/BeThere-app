@@ -71,8 +71,8 @@ class RegistrationViewModel @Inject constructor(
     fun buttonOnClick() {
         val email = (_uiState.value as RegistrationLoaded).email
         val password = (_uiState.value as RegistrationLoaded).password
-        try {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            try {
                 beTherePresenter.registrate(
                     email = email,
                     password = password,
@@ -87,18 +87,19 @@ class RegistrationViewModel @Inject constructor(
                             RegistrationFailure(isRegistrationFailed = true, exception = it)
                     }
                 )
+            } catch (e: Exception) {
+                _registrationFailedEvent.value = RegistrationFailure(
+                    isRegistrationFailed = true,
+                    exception = e
+                )
             }
-        } catch (e: Exception) {
-            _registrationFailedEvent.value = RegistrationFailure(
-                isRegistrationFailed = true,
-                exception = e
-            )
         }
     }
 
     fun handledRegistrationFailedEvent() {
         _uiState.update {
             (_uiState.value as RegistrationLoaded).copy(
+                email = "",
                 password = "",
                 passwordAgain = "",
             )

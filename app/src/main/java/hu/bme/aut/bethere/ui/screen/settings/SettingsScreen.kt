@@ -1,7 +1,6 @@
 package hu.bme.aut.bethere.ui.screen.settings
 
 import android.net.Uri
-import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -15,7 +14,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -28,6 +26,8 @@ import hu.bme.aut.bethere.ui.screen.settings.SettingsUiState.SettingsSaved
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
+import hu.bme.aut.bethere.ui.view.dialog.BeThereAlertDialog
+import hu.bme.aut.bethere.ui.view.dialog.LoadingDialog
 import hu.bme.aut.bethere.ui.view.textfield.OutlinedEditTextField
 
 @Destination
@@ -38,6 +38,7 @@ fun SettingsScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val updateUserFailedEvent by viewModel.updateUserFailedEvent.collectAsState()
+    val showSavingDialog by viewModel.savingState.collectAsState()
 
     when (uiState) {
         is SettingsLoaded -> {
@@ -137,12 +138,14 @@ fun SettingsScreen(
                         .padding(MaterialTheme.beThereDimens.gapNormal)
                 )
                 if (updateUserFailedEvent.isUpdateUserFailed) {
-                    viewModel.handledUpdateUserFailedEvent()
-                    Toast.makeText(
-                        LocalContext.current,
-                        "Error updating your profile",
-                        Toast.LENGTH_LONG
-                    ).show()
+                    BeThereAlertDialog(
+                        title = stringResource(R.string.update_profile_failed),
+                        description = updateUserFailedEvent.exception?.message.toString(),
+                        onDismiss = { viewModel.handledUpdateUserFailedEvent() }
+                    )
+                }
+                if (showSavingDialog) {
+                    LoadingDialog(text = stringResource(R.string.saving))
                 }
             }
         }
