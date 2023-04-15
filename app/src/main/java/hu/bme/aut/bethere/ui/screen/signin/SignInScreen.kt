@@ -1,17 +1,15 @@
 package hu.bme.aut.bethere.ui.screen.signin
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -22,10 +20,11 @@ import hu.bme.aut.bethere.ui.screen.destinations.HomeScreenDestination
 import hu.bme.aut.bethere.ui.screen.destinations.RegistrationScreenDestination
 import hu.bme.aut.bethere.ui.screen.signin.SignInUiState.SignInLoaded
 import hu.bme.aut.bethere.ui.screen.signin.SignInUiState.SignInSuccess
-import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
+import hu.bme.aut.bethere.ui.view.dialog.BeThereAlertDialog
+import hu.bme.aut.bethere.ui.view.dialog.LoadingDialog
 import hu.bme.aut.bethere.ui.view.textfield.EmailTextField
 import hu.bme.aut.bethere.ui.view.textfield.PasswordTextField
 
@@ -39,6 +38,7 @@ fun SignInScreen(
     val uiState by viewModel.uiState.collectAsState()
 
     val signInFailedEvent by viewModel.signInFailedEvent.collectAsState()
+    val showLoadingDialog by viewModel.loginState.collectAsState()
 
     when (uiState) {
         is SignInLoaded -> {
@@ -56,33 +56,27 @@ fun SignInScreen(
                     Text(
                         text = stringResource(R.string.sign_in),
                         style = MaterialTheme.beThereTypography.titleTextStyle,
-                        modifier = Modifier.padding(vertical = MaterialTheme.beThereDimens.gapVeryVeryLarge)
+                        modifier = Modifier.padding(vertical = MaterialTheme.beThereDimens.gapVeryLarge)
                     )
                     EmailTextField(
                         email = (uiState as SignInLoaded).email,
                         onEmailTextChange = viewModel::onEmailChange,
-                        modifier = Modifier.padding(vertical = MaterialTheme.beThereDimens.gapNormal)
+                        modifier = Modifier.padding(bottom = MaterialTheme.beThereDimens.gapLarge)
                     )
                     PasswordTextField(
                         password = (uiState as SignInLoaded).password,
                         onPasswordTextChange = viewModel::onPasswordChange,
-                        modifier = Modifier.padding(vertical = MaterialTheme.beThereDimens.gapNormal)
+                        modifier = Modifier.padding(bottom = MaterialTheme.beThereDimens.gapLarge)
                     )
-                    Button(
+                    TextButton(
                         onClick = { navigator.navigate(RegistrationScreenDestination) },
-                        colors = ButtonDefaults.buttonColors(
-                            backgroundColor = MaterialTheme.beThereColors.white,
-                            contentColor = MaterialTheme.beThereColors.black
-                        ),
-                        elevation = ButtonDefaults.elevation(
-                            defaultElevation = MaterialTheme.beThereDimens.gapNone,
-                            pressedElevation = MaterialTheme.beThereDimens.gapNone,
-                            disabledElevation = MaterialTheme.beThereDimens.gapNone
+                        colors = ButtonDefaults.textButtonColors(
+                            contentColor = MaterialTheme.colors.onBackground
                         )
                     ) {
                         Text(
                             text = stringResource(R.string.registrate),
-                            style = MaterialTheme.beThereTypography.registrateButtonTextStyle
+                            style = MaterialTheme.beThereTypography.registrateButtonTextStyle,
                         )
                     }
                 }
@@ -92,16 +86,18 @@ fun SignInScreen(
                     enabled = viewModel.isButtonEnabled(),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = MaterialTheme.beThereDimens.gapLarge),
+                        .padding(bottom = MaterialTheme.beThereDimens.gapNormal),
                 )
 
                 if (signInFailedEvent.isLoginFailed) {
-                    viewModel.handledSignInFailedEvent()
-                    Toast.makeText(
-                        LocalContext.current,
-                        stringResource(R.string.sign_in_error),
-                        Toast.LENGTH_LONG
-                    ).show()
+                    BeThereAlertDialog(
+                        title = stringResource(R.string.login_failed),
+                        description = signInFailedEvent.exception?.message.toString(),
+                        onDismiss = { viewModel.handledSignInFailedEvent() },
+                    )
+                }
+                if (showLoadingDialog) {
+                    LoadingDialog(text = stringResource(R.string.signing_in))
                 }
             }
         }

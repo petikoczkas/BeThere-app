@@ -10,9 +10,36 @@
     <string name="sign_in">Sign in</string>
     <string name="save">Save</string>
     <string name="search">Search</string>
-    <string name="search_placeholder" tools:ignore="TypographyEllipsis">Search...</string>
     <string name="your_friends">Your Friends</string>
     <string name="others">Others</string>
     <string name="message_placeholder" tools:ignore="TypographyEllipsis">Type a message...</string>
-    <string name="sign_in_error">You have entered an invalid email or password!</string>
+    <string name="succesful_registration">Successful Registration</string>
+    <string name="next">Next</string>
+    <string name="search_event_placeholder">Search for an event</string>
+    <string name="search_user_placeholder">Search for a User</string>
+    <string name="no_events">You have no events</string>
+    <string name="new_event">Create new event</string>
+    <string name="time_and_date">Time and date:</string>
+    <string name="time_and_date_placeholder">Time and date</string>
+    <string name="location">Location:</string>
+    <string name="location_placeholder">Location:</string>
+    <string name="edit_event">Edit event</string>
+    <string name="members">Members</string>
+    <string name="name">Name</string>
+    <string name="no_friends">You have no friends</string>
+    <string name="name_of_event">Name of event</string>
+    <string name="ok">OK</string>
+    <string name="cancel" tools:ignore="ButtonCase">CANCEL</string>
+    <string name="pick_date">Pick a date</string>
+    <string name="pick_time">Pick a time</string>
+    <string name="settings">Settings</string>
+    <string name="login_failed">Login Failed</string>
+    <string name="registration_failed">Registration Failed</string>
+    <string name="send_message_failed">Failed To Send The Message</string>
+    <string name="save_event_failed">Failed To Save The Event</string>
+    <string name="add_friend_failed">Failed To Add Friend</string>
+    <string name="add_user_to_event_failed">Failed To Add User To Event</string>
+    <string name="update_profile_failed">Failed To Update Your Profile</string>
+    <string name="saving" tools:ignore="TypographyEllipsis">Saving...</string>
+    <string name="signing_in" tools:ignore="TypographyEllipsis">Signing in...</string>
 </resources>

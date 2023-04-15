@@ -24,7 +24,7 @@ val Typography = Typography(
     body1 = TextStyle(
         fontFamily = ProximaNova,
         fontWeight = FontWeight.Normal,
-        fontSize = 18.sp
+        fontSize = 20.sp
     )
 )
 
@@ -32,13 +32,7 @@ data class BeThereTypography(
     val titleTextStyle: TextStyle = TextStyle(
         fontFamily = ProximaNova,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 56.sp,
-        textAlign = TextAlign.Center
-    ),
-    val eventTitleTextStyle: TextStyle = TextStyle(
-        fontFamily = ProximaNova,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 32.sp,
+        fontSize = 42.sp,
         textAlign = TextAlign.Center
     ),
     val beThereTextFieldTextStyle: TextStyle = TextStyle(
@@ -46,21 +40,21 @@ data class BeThereTypography(
         fontWeight = FontWeight.Normal,
         fontSize = 18.sp,
     ),
-    val editTextFieldTextStyle: TextStyle = TextStyle(
-        fontFamily = ProximaNova,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp,
-    ),
     val cardTextStyle: TextStyle = TextStyle(
         fontFamily = ProximaNova,
-        fontWeight = FontWeight.SemiBold,
+        fontWeight = FontWeight.Normal,
         fontSize = 18.sp,
     ),
     val primaryButtonTextStyle: TextStyle = TextStyle(
         fontFamily = ProximaNova,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 18.sp,
+        fontSize = 20.sp,
         letterSpacing = 0.sp
+    ),
+    val placeHolderTextStyle: TextStyle = TextStyle(
+        fontFamily = ProximaNova,
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp
     ),
     val registrateButtonTextStyle: TextStyle = TextStyle(
         fontFamily = ProximaNova,
@@ -70,9 +64,34 @@ data class BeThereTypography(
     ),
     val descriptionTextStyle: TextStyle = TextStyle(
         fontFamily = ProximaNova,
+        fontWeight = FontWeight.Normal,
+        fontSize = 18.sp,
+    ),
+    val passwordCheckerTitleTextStyle: TextStyle = TextStyle(
+        fontFamily = ProximaNova,
         fontWeight = FontWeight.SemiBold,
         fontSize = 18.sp,
     ),
+    val passwordCheckerDescriptionTextStyle: TextStyle = TextStyle(
+        fontFamily = ProximaNova,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 14.sp,
+    ),
+    val messageTextStyle: TextStyle = TextStyle(
+        fontFamily = ProximaNova,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+    ),
+    val messageOwnerTextStyle: TextStyle = TextStyle(
+        fontFamily = ProximaNova,
+        fontWeight = FontWeight.Normal,
+        fontSize = 12.sp,
+    ),
+    val memberTitleTextStyle: TextStyle = TextStyle(
+        fontFamily = ProximaNova,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 20.sp,
+    )
 )
 
 val LocalTypography = staticCompositionLocalOf { BeThereTypography() }

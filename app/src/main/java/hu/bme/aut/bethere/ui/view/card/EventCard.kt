@@ -13,7 +13,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 
@@ -29,7 +28,7 @@ fun EventCard(
             .clip(RoundedCornerShape(MaterialTheme.beThereDimens.cardCornerSize))
             .heightIn(MaterialTheme.beThereDimens.minEventCardHeight)
             .clickable { onClick() },
-        backgroundColor = MaterialTheme.beThereColors.gray,
+        backgroundColor = MaterialTheme.colors.secondary,
         shape = RoundedCornerShape(MaterialTheme.beThereDimens.cardCornerSize)
     ) {
         Row(

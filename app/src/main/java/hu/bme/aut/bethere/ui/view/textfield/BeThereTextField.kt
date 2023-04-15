@@ -2,7 +2,7 @@ package hu.bme.aut.bethere.ui.view.textfield
 
 import android.util.Patterns
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.*
@@ -18,10 +18,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import hu.bme.aut.bethere.R
-import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
-import java.util.regex.Pattern
+
 
 @Composable
 fun BeThereTextField(
@@ -33,7 +32,8 @@ fun BeThereTextField(
     keyBoardType: KeyboardType = KeyboardType.Text,
     enabled: Boolean = true,
     isEmail: Boolean = false,
-    isPasswordReg: Boolean = false,
+    isPasswordAgain: Boolean = false,
+    firstPassword: String = "",
     isPassword: Boolean = false,
     passwordVisible: Boolean = true,
     onPasswordVisibilityChange: () -> Unit = {}
@@ -41,30 +41,32 @@ fun BeThereTextField(
 
     var isErrorInText by rememberSaveable { mutableStateOf(false) }
 
-    val beThereTextFieldColors = TextFieldDefaults.textFieldColors(
-        textColor = MaterialTheme.beThereColors.black,
-        disabledIndicatorColor = MaterialTheme.beThereColors.transparent,
-        backgroundColor = MaterialTheme.beThereColors.gray,
-        cursorColor = MaterialTheme.beThereColors.black
-    )
+    if (isPasswordAgain) {
+        isErrorInText = firstPassword != text
+    }
+    if (isEmail) {
+        isErrorInText = !Patterns.EMAIL_ADDRESS.matcher(text).matches()
+    }
 
+
+    val beThereTextFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+        backgroundColor = MaterialTheme.colors.secondary,
+        textColor = MaterialTheme.colors.onBackground,
+        leadingIconColor = MaterialTheme.colors.onSecondary,
+        trailingIconColor = MaterialTheme.colors.onSecondary,
+        unfocusedBorderColor = MaterialTheme.colors.onSecondary,
+        focusedBorderColor = MaterialTheme.colors.primary,
+        placeholderColor = MaterialTheme.colors.onSecondary,
+        errorTrailingIconColor = MaterialTheme.colors.onSecondary,
+        errorLeadingIconColor = MaterialTheme.colors.error
+    )
     OutlinedTextField(
         value = text,
-        onValueChange = {
-            onTextChange(it)
-            if (isPasswordReg) {
-                isErrorInText =
-                    !Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$").matcher(it)
-                        .matches()
-            }
-            if (isEmail) {
-                isErrorInText = !Patterns.EMAIL_ADDRESS.matcher(it).matches()
-            }
-        },
+        onValueChange = onTextChange,
         singleLine = true,
         enabled = enabled,
         isError = if (text != "") isErrorInText else false,
-        placeholder = { Text(label) },
+        placeholder = { Text(label, style = MaterialTheme.beThereTypography.placeHolderTextStyle) },
         leadingIcon = {
             Icon(
                 painter = painterResource(id = leadingIcon),
@@ -73,7 +75,7 @@ fun BeThereTextField(
         },
         modifier = modifier
             .fillMaxWidth()
-            .heightIn(MaterialTheme.beThereDimens.minBeThereTextFieldHeight),
+            .height(MaterialTheme.beThereDimens.minBeThereTextFieldHeight),
         colors = beThereTextFieldColors,
         textStyle = MaterialTheme.beThereTypography.beThereTextFieldTextStyle,
         keyboardOptions = KeyboardOptions(keyboardType = keyBoardType),
@@ -83,9 +85,9 @@ fun BeThereTextField(
             if (isPassword) {
                 val image: Painter =
                     if (passwordVisible) {
-                        painterResource(id = R.drawable.ic_visibility)
-                    } else {
                         painterResource(id = R.drawable.ic_visibility_off)
+                    } else {
+                        painterResource(id = R.drawable.ic_visibility)
                     }
 
                 IconButton(onClick = onPasswordVisibilityChange) {

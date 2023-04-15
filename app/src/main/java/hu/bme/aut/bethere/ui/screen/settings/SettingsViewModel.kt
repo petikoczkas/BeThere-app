@@ -31,6 +31,9 @@ class SettingsViewModel @Inject constructor(
         MutableStateFlow(UpdateUserFailure(isUpdateUserFailed = false, exception = null))
     val updateUserFailedEvent = _updateUserFailedEvent.asStateFlow()
 
+    private val _savingState = MutableStateFlow(false)
+    val savingState = _savingState.asStateFlow()
+
     init {
         viewModelScope.launch {
             currentUser = beTherePresenter.getCurrentUser()
@@ -50,6 +53,7 @@ class SettingsViewModel @Inject constructor(
     }
 
     fun saveButtonOnClick() {
+        _savingState.value = true
         viewModelScope.launch {
             try {
                 currentUser.name = (_uiState.value as SettingsLoaded).name
@@ -62,14 +66,17 @@ class SettingsViewModel @Inject constructor(
                             viewModelScope.launch {
                                 beTherePresenter.updateUser(currentUser)
                             }
+                            _savingState.value = true
                             _uiState.value = SettingsSaved
                         }
                     )
                 } else {
                     beTherePresenter.updateUser(currentUser)
+                    _savingState.value = true
                     _uiState.value = SettingsSaved
                 }
             } catch (e: Exception) {
+                _savingState.value = false
                 _updateUserFailedEvent.value =
                     UpdateUserFailure(isUpdateUserFailed = true, exception = e)
             }

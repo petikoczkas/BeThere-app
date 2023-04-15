@@ -1,24 +1,21 @@
 package hu.bme.aut.bethere.ui.screen.event
 
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.*
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -27,12 +24,11 @@ import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.Message
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.ui.screen.destinations.EventDetailsScreenDestination
-import hu.bme.aut.bethere.ui.theme.beThereColors
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
+import hu.bme.aut.bethere.ui.view.card.ProfilePicture
+import hu.bme.aut.bethere.ui.view.dialog.BeThereAlertDialog
 import hu.bme.aut.bethere.utils.toSimpleString
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Destination
 @Composable
@@ -48,8 +44,6 @@ fun EventScreen(
     val users by viewModel.users.observeAsState()
     val sendMessageFailedEvent by viewModel.sendMessageFailedEvent.collectAsState()
 
-    val listState = rememberLazyListState()
-    val coroutineScope = rememberCoroutineScope()
 
     Column(
         modifier = Modifier
@@ -60,6 +54,7 @@ fun EventScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(top = MaterialTheme.beThereDimens.gapVeryLarge)
                     .weight(1f),
                 horizontalAlignment = Alignment.CenterHorizontally
 
@@ -71,26 +66,23 @@ fun EventScreen(
                 )
                 InfoBox(event = event!!)
                 LazyColumn(
-                    state = listState,
+                    reverseLayout = true,
                     modifier = Modifier
+                        .navigationBarsPadding()
+                        .imePadding()
                         .padding(
                             horizontal = MaterialTheme.beThereDimens.gapNormal,
                             vertical = MaterialTheme.beThereDimens.gapMedium
                         )
                 ) {
-                    event?.let {
-                        items(event!!.messages) {
-                            MessageCard(
-                                viewModel = viewModel,
-                                messageItem = it,
-                                currentUser = currentUser,
-                                users = users
-                            )
-                        }
+                    items(event!!.messages.reversed()) {
+                        MessageCard(
+                            viewModel = viewModel,
+                            messageItem = it,
+                            currentUser = currentUser,
+                            users = users
+                        )
                     }
-                }
-                LaunchedEffect(Unit) {
-                    listState.animateScrollToItem(event!!.messages.size)
                 }
             }
             Row(
@@ -103,19 +95,18 @@ fun EventScreen(
                     ),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                TextField(
+                OutlinedTextField(
                     value = messageText,
                     onValueChange = viewModel::onMessageTextChange,
                     placeholder = { Text(stringResource(R.string.message_placeholder)) },
                     modifier = Modifier.weight(1f),
-                    colors = TextFieldDefaults.textFieldColors(
-                        focusedLabelColor = MaterialTheme.beThereColors.darkGray,
-                        textColor = MaterialTheme.beThereColors.black,
-                        focusedIndicatorColor = MaterialTheme.beThereColors.transparent,
-                        unfocusedIndicatorColor = MaterialTheme.beThereColors.transparent,
-                        disabledIndicatorColor = MaterialTheme.beThereColors.transparent,
-                        backgroundColor = MaterialTheme.beThereColors.gray,
-                        cursorColor = MaterialTheme.beThereColors.black
+                    colors = TextFieldDefaults.outlinedTextFieldColors(
+                        backgroundColor = MaterialTheme.colors.secondary,
+                        textColor = MaterialTheme.colors.onBackground,
+                        leadingIconColor = MaterialTheme.colors.onSecondary,
+                        unfocusedBorderColor = MaterialTheme.colors.onSecondary,
+                        focusedBorderColor = MaterialTheme.colors.primary,
+                        placeholderColor = MaterialTheme.colors.onSecondary,
                     ),
                     textStyle = MaterialTheme.beThereTypography.beThereTextFieldTextStyle,
                     shape = RoundedCornerShape(MaterialTheme.beThereDimens.textFieldCornerSize)
@@ -127,26 +118,22 @@ fun EventScreen(
                             event = event!!,
                             text = messageText
                         )
-                        coroutineScope.launch {
-                            delay(200)
-                            listState.animateScrollToItem(event!!.messages.size)
-                        }
                     }
                 ) {
                     Icon(
                         painter = painterResource(id = R.drawable.ic_send),
                         contentDescription = null,
+                        tint = MaterialTheme.colors.primary
                     )
                 }
             }
         }
         if (sendMessageFailedEvent.isSendMessageFailed) {
-            viewModel.handledSendMessageFailedEvent()
-            Toast.makeText(
-                LocalContext.current,
-                "Error sending a message",
-                Toast.LENGTH_LONG
-            ).show()
+            BeThereAlertDialog(
+                title = stringResource(R.string.send_message_failed),
+                description = sendMessageFailedEvent.exception?.message.toString(),
+                onDismiss = { viewModel.handledSendMessageFailedEvent() }
+            )
         }
     }
 }
@@ -170,12 +157,13 @@ private fun Header(
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_arrow_back),
-                contentDescription = null
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary
             )
         }
         Text(
             text = event.name,
-            style = MaterialTheme.beThereTypography.eventTitleTextStyle,
+            style = MaterialTheme.beThereTypography.titleTextStyle,
             modifier = Modifier.weight(5f)
         )
         IconButton(
@@ -193,7 +181,8 @@ private fun Header(
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_edit),
-                contentDescription = null
+                contentDescription = null,
+                tint = MaterialTheme.colors.primary
             )
         }
     }
@@ -201,17 +190,17 @@ private fun Header(
 
 @Composable
 private fun InfoBox(event: Event) {
-    val textFieldColors = TextFieldDefaults.textFieldColors(
-        disabledTextColor = MaterialTheme.beThereColors.black,
-        disabledIndicatorColor = MaterialTheme.beThereColors.transparent,
-        backgroundColor = MaterialTheme.beThereColors.gray,
-    )
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(MaterialTheme.beThereDimens.gapNormal)
+            .padding(
+                start = MaterialTheme.beThereDimens.gapNormal,
+                top = MaterialTheme.beThereDimens.gapNormal,
+                end = MaterialTheme.beThereDimens.gapNormal,
+                bottom = MaterialTheme.beThereDimens.gapMedium
+            )
             .clip(RoundedCornerShape(MaterialTheme.beThereDimens.textFieldCornerSize))
-            .background(MaterialTheme.beThereColors.gray)
+            .background(MaterialTheme.colors.secondary)
     ) {
         Row(
             modifier = Modifier
@@ -220,42 +209,37 @@ private fun InfoBox(event: Event) {
             horizontalArrangement = Arrangement.SpaceAround
         ) {
             Column(modifier = Modifier.weight(1f)) {
-                TextField(
-                    value = "Time and date:",
-                    onValueChange = {},
-                    enabled = false,
-                    textStyle = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    colors = textFieldColors
+                Text(
+                    text = stringResource(R.string.time_and_date),
+                    style = MaterialTheme.beThereTypography.descriptionTextStyle,
+                    color = MaterialTheme.colors.onSecondary
                 )
-                TextField(
-                    value = "Location:",
-                    onValueChange = {},
-                    enabled = false,
-                    textStyle = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    colors = textFieldColors
+                Text(
+                    text = stringResource(R.string.location),
+                    style = MaterialTheme.beThereTypography.descriptionTextStyle,
+                    color = MaterialTheme.colors.onSecondary
                 )
             }
-            Column(modifier = Modifier.weight(1f)) {
-                TextField(
-                    value = event.date.toSimpleString(),
-                    onValueChange = { },
-                    enabled = false,
-                    textStyle = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    colors = textFieldColors
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.End
+            ) {
+                Text(
+                    text = event.date.toSimpleString(),
+                    style = MaterialTheme.beThereTypography.descriptionTextStyle,
+                    color = MaterialTheme.colors.onSecondary
                 )
-                TextField(
-                    value = event.location,
-                    onValueChange = { },
-                    enabled = false,
-                    textStyle = MaterialTheme.beThereTypography.descriptionTextStyle,
-                    colors = textFieldColors
+                Text(
+                    text = event.location,
+                    style = MaterialTheme.beThereTypography.descriptionTextStyle,
+                    color = MaterialTheme.colors.onSecondary
                 )
             }
         }
     }
     Divider(
         thickness = MaterialTheme.beThereDimens.dividerThickness,
-        color = MaterialTheme.beThereColors.black,
+        color = MaterialTheme.colors.primary,
         modifier = Modifier.padding(horizontal = MaterialTheme.beThereDimens.gapNormal)
     )
 }
@@ -270,42 +254,67 @@ private fun MessageCard(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
+            .padding(
+                horizontal = MaterialTheme.beThereDimens.gapMedium,
+                vertical = MaterialTheme.beThereDimens.gapSmall
+            ),
         horizontalAlignment = when (messageItem.sentBy) {
             currentUser.id -> Alignment.End
             else -> Alignment.Start
         },
     ) {
-        Card(
-            modifier = Modifier.widthIn(max = 340.dp),
-            shape = cardShapeFor(messageItem, currentUser.id),
-            backgroundColor = when (messageItem.sentBy) {
-                currentUser.id -> MaterialTheme.colors.primary
-                else -> MaterialTheme.colors.secondary
-            },
-        ) {
-            Text(
-                modifier = Modifier.padding(8.dp),
-                text = messageItem.text,
-                color = when (messageItem.sentBy) {
-                    currentUser.id -> MaterialTheme.colors.onPrimary
-                    else -> MaterialTheme.colors.onSecondary
+        Row(verticalAlignment = Alignment.Bottom) {
+            if (messageItem.sentBy != currentUser.id) {
+                ProfilePicture(
+                    photo = viewModel.findUserProfileById(
+                        id = messageItem.sentBy,
+                        users = users
+                    ),
+                    modifier = Modifier
+                        .padding(end = MaterialTheme.beThereDimens.gapTiny)
+                        .size(MaterialTheme.beThereDimens.messageCardImageSize)
+                )
+            }
+            Card(
+                modifier = Modifier.widthIn(max = MaterialTheme.beThereDimens.messageCardSize),
+                shape = cardShapeFor(messageItem, currentUser.id),
+                backgroundColor = when (messageItem.sentBy) {
+                    currentUser.id -> MaterialTheme.colors.primary
+                    else -> MaterialTheme.colors.secondary
                 },
-            )
+            ) {
+                Text(
+                    modifier = Modifier.padding(MaterialTheme.beThereDimens.gapMedium),
+                    text = messageItem.text,
+                    color = when (messageItem.sentBy) {
+                        currentUser.id -> MaterialTheme.colors.onPrimary
+                        else -> MaterialTheme.colors.onSecondary
+                    },
+                    style = MaterialTheme.beThereTypography.messageTextStyle
+                )
+            }
+            if (messageItem.sentBy == currentUser.id) {
+                ProfilePicture(
+                    photo = currentUser.photo,
+                    modifier = Modifier
+                        .padding(start = MaterialTheme.beThereDimens.gapTiny)
+                        .size(MaterialTheme.beThereDimens.messageCardImageSize)
+                )
+            }
         }
         Text(
             text = when (messageItem.sentBy) {
                 currentUser.id -> currentUser.name
                 else -> viewModel.findUserNameById(id = messageItem.sentBy, users = users)
             },
-            fontSize = 12.sp,
+            style = MaterialTheme.beThereTypography.messageOwnerTextStyle
         )
     }
 }
 
 @Composable
 private fun cardShapeFor(message: Message, userId: String): RoundedCornerShape {
-    val roundedCorners = RoundedCornerShape(16.dp)
+    val roundedCorners = RoundedCornerShape(MaterialTheme.beThereDimens.messageCardCornerSize)
     return when (message.sentBy) {
         userId -> roundedCorners.copy(bottomEnd = CornerSize(0))
         else -> roundedCorners.copy(bottomStart = CornerSize(0))

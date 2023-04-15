@@ -1,23 +1,15 @@
 package hu.bme.aut.bethere.ui.screen.search
 
-import android.widget.Toast
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.material.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
-import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenInit
-import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenAddFriends
-import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenAddMembers
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,10 +17,11 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
 import hu.bme.aut.bethere.data.model.User
-import hu.bme.aut.bethere.ui.screen.destinations.EventDetailsScreenDestination
+import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenInit
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.card.UserCard
+import hu.bme.aut.bethere.ui.view.dialog.BeThereAlertDialog
 import hu.bme.aut.bethere.ui.view.textfield.SearchField
 
 @Destination
@@ -46,7 +39,7 @@ fun SearchScreen(
     viewModel.setSearchedUsers(allUser)
     viewModel.separateUsers(searchedUsers)
 
-    when(uiState){
+    when (uiState) {
         SearchScreenInit -> {
             viewModel.setUiState(isAddFriendClicked = isAddFriendClicked)
         }
@@ -62,66 +55,56 @@ fun SearchScreen(
                     horizontalAlignment = Alignment.CenterHorizontally
 
                 ) {
-                    IconButton(
-                        onClick = { navigator.popBackStack() },
+                    Row(
                         modifier = Modifier
-                            .align(Alignment.Start)
-                            .padding(start = MaterialTheme.beThereDimens.gapMedium)
+                            .fillMaxWidth()
+                            .padding(top = MaterialTheme.beThereDimens.gapVeryLarge),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_arrow_back),
-                            contentDescription = null
+                        IconButton(
+                            onClick = { navigator.popBackStack() },
+                            modifier = Modifier
+                                .padding(start = MaterialTheme.beThereDimens.gapMedium)
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_arrow_back),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.primary
+                            )
+                        }
+                        Text(
+                            text = stringResource(R.string.search),
+                            style = MaterialTheme.beThereTypography.titleTextStyle,
+                        )
+                        Box(
+                            modifier = Modifier
+                                .size(
+                                    height = MaterialTheme.beThereDimens.gapVeryTiny,
+                                    width = MaterialTheme.beThereDimens.gapVeryVeryLarge
+                                )
                         )
                     }
-                    Text(
-                        text = stringResource(R.string.search),
-                        style = MaterialTheme.beThereTypography.titleTextStyle,
-                        modifier = Modifier.padding(
-                            top = MaterialTheme.beThereDimens.gapMedium,
-                            bottom = MaterialTheme.beThereDimens.gapVeryVeryLarge,
-                        )
-                    )
                     SearchField(
                         text = searchText,
                         onTextChange = viewModel::onSearchTextChange,
-                        onSearchButtonClick = {}
+                        placeholder = stringResource(R.string.search_user_placeholder)
                     )
-                    var modifier = Modifier.fillMaxWidth()
-                    if (!isAddFriendClicked) {
-                        modifier = modifier.height(MaterialTheme.beThereDimens.userBoxHeight)
-                        SearchList(
-                            text = stringResource(R.string.your_friends),
-                            users = viewModel.friends,
-                            plusButtonOnClick = {
-                                viewModel.addUserToSelectedUsers(it)
-                                viewModel.removeUser(user = it, isFriend = true)
-                            },
-                            modifier = modifier
-                        )
-                    }
                     SearchList(
-                        text = stringResource(R.string.others),
-                        users = viewModel.others,
-                        plusButtonOnClick = { u ->
-                            if (isAddFriendClicked) {
-                                viewModel.addFriend(u)
-                            }
-                            else{
-                                viewModel.addUserToSelectedUsers(u)
-                                viewModel.removeUser(user = u, isFriend = false)
-                            }
-                        },
-                        modifier = modifier
+                        viewModel = viewModel,
+                        friends = viewModel.friends,
+                        others = viewModel.others,
+                        isAddFriendClicked = isAddFriendClicked,
                     )
                 }
             }
             if (addFriendFailedEvent.isAddFriendFailed) {
-                viewModel.handledAddFriendFailedEvent()
-                Toast.makeText(
-                    LocalContext.current,
-                    "Error adding a friend",
-                    Toast.LENGTH_LONG
-                ).show()
+                BeThereAlertDialog(
+                    title = if (isAddFriendClicked) stringResource(R.string.add_friend_failed)
+                    else stringResource(R.string.add_user_to_event_failed),
+                    description = addFriendFailedEvent.exception?.message.toString(),
+                    onDismiss = { viewModel.handledAddFriendFailedEvent() }
+                )
             }
         }
     }
@@ -129,44 +112,91 @@ fun SearchScreen(
 
 @Composable
 private fun SearchList(
-    text: String,
-    users: List<User>,
-    plusButtonOnClick: (u: User) -> Unit,
-    modifier: Modifier = Modifier
+    viewModel: SearchViewModel,
+    friends: List<User>,
+    others: List<User>,
+    isAddFriendClicked: Boolean,
 ) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = MaterialTheme.beThereDimens.gapNormal)
-    ) {
-        Text(
-            text = text,
-            style = MaterialTheme.beThereTypography.descriptionTextStyle,
-            modifier = Modifier.padding(
+    LazyColumn(
+        modifier = Modifier
+            .padding(
                 start = MaterialTheme.beThereDimens.gapNormal,
+                top = MaterialTheme.beThereDimens.gapMedium,
+                end = MaterialTheme.beThereDimens.gapNormal,
+                bottom = MaterialTheme.beThereDimens.gapNormal
             )
-        )
-        LazyColumn(
-            modifier = Modifier
-                .padding(
-                    start = MaterialTheme.beThereDimens.gapNormal,
-                    top = MaterialTheme.beThereDimens.gapSmall,
-                    end = MaterialTheme.beThereDimens.gapNormal,
+    ) {
+        if (!isAddFriendClicked) {
+            item {
+                Text(
+                    text = stringResource(R.string.your_friends),
+                    style = MaterialTheme.beThereTypography.descriptionTextStyle,
                 )
-        ) {
-            items(users) { u ->
+            }
+            if (friends.isEmpty()) {
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Text(text = stringResource(R.string.no_friends))
+                    }
+                }
+            }
+            items(friends) { u ->
                 UserCard(
                     text = u.name,
-                    onClick = {},
+                    photo = u.photo,
                     modifier = Modifier
                         .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
                 ) {
-                    IconButton(onClick = { plusButtonOnClick(u) }) {
+                    IconButton(onClick = {
+                        viewModel.addUserToSelectedUsers(u)
+                        viewModel.removeUser(user = u, isFriend = true)
+                    }
+                    ) {
                         Icon(
                             painter = painterResource(id = R.drawable.ic_add),
                             contentDescription = null
                         )
                     }
+                }
+            }
+            item {
+                Divider(
+                    color = MaterialTheme.colors.primary,
+                    thickness = MaterialTheme.beThereDimens.dividerThickness,
+                    modifier = Modifier.padding(
+                        vertical = MaterialTheme.beThereDimens.gapMedium,
+                    )
+                )
+            }
+        }
+        item {
+            Text(
+                text = stringResource(R.string.others),
+                style = MaterialTheme.beThereTypography.descriptionTextStyle,
+            )
+        }
+        items(others) { u ->
+            UserCard(
+                text = u.name,
+                photo = u.photo,
+                modifier = Modifier
+                    .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
+            ) {
+                IconButton(onClick = {
+                    if (isAddFriendClicked) {
+                        viewModel.addFriend(u)
+                    } else {
+                        viewModel.addUserToSelectedUsers(u)
+                        viewModel.removeUser(user = u, isFriend = false)
+                    }
+                }) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_add),
+                        contentDescription = null
+                    )
                 }
             }
         }

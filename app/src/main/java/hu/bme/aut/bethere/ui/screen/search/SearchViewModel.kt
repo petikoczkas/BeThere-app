@@ -100,16 +100,18 @@ class SearchViewModel @Inject constructor(
         else _others.remove(user)
     }
     fun addFriend(user: User) {
-        viewModelScope.launch {
-            try {
-                currentUser.friends.add(user.id)
-                _friends.add(user)
-                _others.remove(user)
-                beTherePresenter.updateUser(user = currentUser)
-                onSearchTextChange("")
-            } catch (e: Exception) {
-                _addFriendFailedEvent.value =
-                    AddFriendFailure(isAddFriendFailed = true, exception = e)
+        if (!currentUser.friends.contains(user.id)) {
+            viewModelScope.launch {
+                try {
+                    currentUser.friends.add(user.id)
+                    _friends.add(user)
+                    _others.remove(user)
+                    beTherePresenter.updateUser(user = currentUser)
+                    onSearchTextChange("")
+                } catch (e: Exception) {
+                    _addFriendFailedEvent.value =
+                        AddFriendFailure(isAddFriendFailed = true, exception = e)
+                }
             }
         }
     }

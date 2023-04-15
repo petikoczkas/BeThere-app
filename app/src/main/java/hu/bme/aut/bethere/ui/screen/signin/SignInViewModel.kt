@@ -30,6 +30,9 @@ class SignInViewModel @Inject constructor(
         MutableStateFlow(SignInFailure(isLoginFailed = false, exception = null))
     val signInFailedEvent = _signInFailedEvent.asStateFlow()
 
+    private val _loginState = MutableStateFlow(false)
+    val loginState = _loginState.asStateFlow()
+
     fun onEmailChange(emailAddress: String) {
         _uiState.update { (_uiState.value as SignInLoaded).copy(email = emailAddress) }
     }
@@ -46,20 +49,24 @@ class SignInViewModel @Inject constructor(
     fun buttonOnClick() {
         val email = (_uiState.value as SignInLoaded).email
         val password = (_uiState.value as SignInLoaded).password
+        _loginState.value = true
         viewModelScope.launch {
             try {
                 beTherePresenter.signIn(
                     email = email,
                     password = password,
                     onSuccess = {
+                        _loginState.value = false
                         _uiState.value = SignInSuccess
                     },
                     onFailure = {
+                        _loginState.value = false
                         _signInFailedEvent.value =
                             SignInFailure(isLoginFailed = true, exception = it)
                     }
                 )
             } catch (e: Exception) {
+                _loginState.value = false
                 _signInFailedEvent.value = SignInFailure(isLoginFailed = true, exception = e)
             }
         }
