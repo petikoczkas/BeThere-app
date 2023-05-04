@@ -91,7 +91,12 @@ data class BeThereTypography(
         fontFamily = ProximaNova,
         fontWeight = FontWeight.SemiBold,
         fontSize = 20.sp,
-    )
+    ),
+    val noNetDialogTextStyle: TextStyle = TextStyle(
+        fontFamily = ProximaNova,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 18.sp,
+    ),
 )
 
 val LocalTypography = staticCompositionLocalOf { BeThereTypography() }

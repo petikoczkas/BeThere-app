@@ -42,4 +42,5 @@
     <string name="update_profile_failed">Failed To Update Your Profile</string>
     <string name="saving" tools:ignore="TypographyEllipsis">Saving...</string>
     <string name="signing_in" tools:ignore="TypographyEllipsis">Signing in...</string>
+    <string name="no_net">No Internet Connection!</string>
 </resources>
