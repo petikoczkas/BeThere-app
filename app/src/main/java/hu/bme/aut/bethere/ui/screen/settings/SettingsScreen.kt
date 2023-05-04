@@ -21,8 +21,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
-import hu.bme.aut.bethere.ui.screen.settings.SettingsUiState.SettingsLoaded
-import hu.bme.aut.bethere.ui.screen.settings.SettingsUiState.SettingsSaved
+import hu.bme.aut.bethere.ui.screen.settings.SettingsUiState.*
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
@@ -41,6 +40,9 @@ fun SettingsScreen(
     val showSavingDialog by viewModel.savingState.collectAsState()
 
     when (uiState) {
+        is SettingsInit -> {
+            viewModel.getCurrentUser()
+        }
         is SettingsLoaded -> {
             val painter = rememberAsyncImagePainter(
                 if ((uiState as SettingsLoaded).imageUri == Uri.EMPTY) {

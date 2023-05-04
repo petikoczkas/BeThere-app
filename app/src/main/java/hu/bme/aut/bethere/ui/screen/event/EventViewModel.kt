@@ -9,8 +9,10 @@ import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.Message
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.ui.BeTherePresenter
+import hu.bme.aut.bethere.utils.removeEmptyLines
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -22,6 +24,9 @@ import javax.inject.Inject
 class EventViewModel @Inject constructor(
     private val beTherePresenter: BeTherePresenter
 ) : ViewModel() {
+
+    private val _uiState = MutableStateFlow<EventUiState>(EventUiState.EventInit)
+    val uiState: StateFlow<EventUiState> = _uiState.asStateFlow()
 
     private val _users = MutableLiveData<List<User>>()
     val users: LiveData<List<User>> = _users
@@ -36,7 +41,8 @@ class EventViewModel @Inject constructor(
         MutableStateFlow(SendMessageFailure(isSendMessageFailed = false, exception = null))
     val sendMessageFailedEvent = _sendMessageFailedEvent.asStateFlow()
 
-    init {
+    fun getUsers() {
+        _uiState.value = EventUiState.EventLoaded
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
                 beTherePresenter.getUsers().collect {
@@ -90,7 +96,7 @@ class EventViewModel @Inject constructor(
                         Message(
                             id = UUID.randomUUID().toString(),
                             sentBy = currentUser.id,
-                            text = text
+                            text = text.removeEmptyLines()
                         )
                     )
                     beTherePresenter.updateEvent(event = event)

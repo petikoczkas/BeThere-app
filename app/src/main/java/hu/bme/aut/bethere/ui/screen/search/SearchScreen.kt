@@ -17,7 +17,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
 import hu.bme.aut.bethere.data.model.User
-import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.SearchScreenInit
+import hu.bme.aut.bethere.ui.screen.search.SearchUiState.SearchInit
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
 import hu.bme.aut.bethere.ui.view.card.UserCard
@@ -40,7 +40,8 @@ fun SearchScreen(
     viewModel.separateUsers(searchedUsers)
 
     when (uiState) {
-        SearchScreenInit -> {
+        SearchInit -> {
+            viewModel.getUsers()
             viewModel.setUiState(isAddFriendClicked = isAddFriendClicked)
         }
         else -> {

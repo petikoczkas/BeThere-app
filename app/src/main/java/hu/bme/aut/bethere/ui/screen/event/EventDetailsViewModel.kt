@@ -43,7 +43,7 @@ class EventDetailsViewModel @Inject constructor(
         MutableStateFlow(SaveEventFailure(isSaveEventFailed = false, exception = null))
     val saveEventFailedEvent = _saveEventFailedEvent.asStateFlow()
 
-    init {
+    fun getUsers() {
         clearEventMembers()
         viewModelScope.launch {
             withContext(Dispatchers.IO) {
@@ -156,7 +156,7 @@ class EventDetailsViewModel @Inject constructor(
         _uiState.update { (_uiState.value as EventDetailsLoaded).copy(location = location) }
     }
 
-    fun handledAddFriendFailedEvent() {
+    fun handledSaveEventFailedEvent() {
         _saveEventFailedEvent.update { _saveEventFailedEvent.value.copy(isSaveEventFailed = false) }
     }
 

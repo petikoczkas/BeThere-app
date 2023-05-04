@@ -35,6 +35,8 @@ import hu.bme.aut.bethere.ui.view.card.UserCard
 import hu.bme.aut.bethere.ui.view.dialog.BeThereAlertDialog
 import hu.bme.aut.bethere.ui.view.textfield.OutlinedEditTextField
 import hu.bme.aut.bethere.utils.ComposableLifecycle
+import hu.bme.aut.bethere.utils.toLocalDate
+import hu.bme.aut.bethere.utils.toLocalTime
 import hu.bme.aut.bethere.utils.toSimpleString
 import java.time.LocalDate
 import java.time.LocalTime
@@ -186,11 +188,12 @@ fun EventDetailsScreen(
                 BeThereAlertDialog(
                     title = stringResource(R.string.save_event_failed),
                     description = saveEventFailedEvent.exception?.message.toString(),
-                    onDismiss = { viewModel.handledAddFriendFailedEvent() }
+                    onDismiss = { viewModel.handledSaveEventFailedEvent() }
                 )
             }
         }
         is EventDetailsInit -> {
+            viewModel.getUsers()
             viewModel.setEvent(eventId = eventId, currentUser = currentUser)
         }
         is EventDetailsSaved -> {
@@ -208,18 +211,19 @@ private fun Header(
     viewModel: EventDetailsViewModel,
     uiState: EventDetailsUiState
 ) {
+    val date = (uiState as EventDetailsLoaded).date
     var pickedDate by remember {
-        mutableStateOf(LocalDate.now())
+        mutableStateOf(date.toLocalDate())
     }
     var pickedTime by remember {
-        mutableStateOf(LocalTime.now())
+        mutableStateOf(date.toLocalTime())
     }
 
     val dateDialogState = rememberMaterialDialogState()
     val timeDialogState = rememberMaterialDialogState()
 
     OutlinedEditTextField(
-        text = (uiState as EventDetailsLoaded).name,
+        text = uiState.name,
         onTextChange = viewModel::onNameChange,
         placeholder = stringResource(R.string.name_of_event),
         modifier = Modifier.padding(

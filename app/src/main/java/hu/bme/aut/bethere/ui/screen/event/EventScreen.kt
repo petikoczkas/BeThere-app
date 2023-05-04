@@ -38,6 +38,8 @@ fun EventScreen(
     eventId: String,
     currentUser: User
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     val messageText by viewModel.messageText.collectAsState()
     viewModel.getEvent(eventId = eventId)
     val event by viewModel.event.observeAsState()
@@ -45,95 +47,103 @@ fun EventScreen(
     val sendMessageFailedEvent by viewModel.sendMessageFailedEvent.collectAsState()
 
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        event?.let {
+    when (uiState) {
+        EventUiState.EventInit -> {
+            viewModel.getUsers()
+        }
+        EventUiState.EventLoaded -> {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = MaterialTheme.beThereDimens.gapVeryLarge)
-                    .weight(1f),
-                horizontalAlignment = Alignment.CenterHorizontally
-
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Header(
-                    navigator = navigator,
-                    event = event!!,
-                    currentUser = currentUser
-                )
-                InfoBox(event = event!!)
-                LazyColumn(
-                    reverseLayout = true,
-                    modifier = Modifier
-                        .navigationBarsPadding()
-                        .imePadding()
-                        .padding(
-                            horizontal = MaterialTheme.beThereDimens.gapNormal,
-                            vertical = MaterialTheme.beThereDimens.gapMedium
+                event?.let {
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = MaterialTheme.beThereDimens.gapVeryLarge)
+                            .weight(1f),
+                        horizontalAlignment = Alignment.CenterHorizontally
+
+                    ) {
+                        Header(
+                            navigator = navigator,
+                            event = event!!,
+                            currentUser = currentUser
                         )
-                ) {
-                    items(event!!.messages.reversed()) {
-                        MessageCard(
-                            viewModel = viewModel,
-                            messageItem = it,
-                            currentUser = currentUser,
-                            users = users
+                        InfoBox(event = event!!)
+                        LazyColumn(
+                            reverseLayout = true,
+                            modifier = Modifier
+                                .navigationBarsPadding()
+                                .imePadding()
+                                .padding(
+                                    horizontal = MaterialTheme.beThereDimens.gapNormal,
+                                    vertical = MaterialTheme.beThereDimens.gapMedium
+                                )
+                        ) {
+                            items(event!!.messages.reversed()) {
+                                MessageCard(
+                                    viewModel = viewModel,
+                                    messageItem = it,
+                                    currentUser = currentUser,
+                                    users = users
+                                )
+                            }
+                        }
+                    }
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                start = MaterialTheme.beThereDimens.gapNormal,
+                                end = MaterialTheme.beThereDimens.gapMedium,
+                                bottom = MaterialTheme.beThereDimens.gapMedium,
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = messageText,
+                            onValueChange = viewModel::onMessageTextChange,
+                            placeholder = { Text(stringResource(R.string.message_placeholder)) },
+                            modifier = Modifier.weight(1f),
+                            maxLines = 3,
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                backgroundColor = MaterialTheme.colors.secondary,
+                                textColor = MaterialTheme.colors.onBackground,
+                                leadingIconColor = MaterialTheme.colors.onSecondary,
+                                unfocusedBorderColor = MaterialTheme.colors.onSecondary,
+                                focusedBorderColor = MaterialTheme.colors.primary,
+                                placeholderColor = MaterialTheme.colors.onSecondary,
+                            ),
+                            textStyle = MaterialTheme.beThereTypography.beThereTextFieldTextStyle,
+                            shape = RoundedCornerShape(MaterialTheme.beThereDimens.textFieldCornerSize)
                         )
+                        IconButton(
+                            onClick = {
+                                viewModel.sendMessage(
+                                    currentUser = currentUser,
+                                    event = event!!,
+                                    text = messageText
+                                )
+                            }
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.ic_send),
+                                contentDescription = null,
+                                tint = MaterialTheme.colors.primary
+                            )
+                        }
                     }
                 }
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        start = MaterialTheme.beThereDimens.gapNormal,
-                        end = MaterialTheme.beThereDimens.gapMedium,
-                        bottom = MaterialTheme.beThereDimens.gapMedium,
-                    ),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                OutlinedTextField(
-                    value = messageText,
-                    onValueChange = viewModel::onMessageTextChange,
-                    placeholder = { Text(stringResource(R.string.message_placeholder)) },
-                    modifier = Modifier.weight(1f),
-                    colors = TextFieldDefaults.outlinedTextFieldColors(
-                        backgroundColor = MaterialTheme.colors.secondary,
-                        textColor = MaterialTheme.colors.onBackground,
-                        leadingIconColor = MaterialTheme.colors.onSecondary,
-                        unfocusedBorderColor = MaterialTheme.colors.onSecondary,
-                        focusedBorderColor = MaterialTheme.colors.primary,
-                        placeholderColor = MaterialTheme.colors.onSecondary,
-                    ),
-                    textStyle = MaterialTheme.beThereTypography.beThereTextFieldTextStyle,
-                    shape = RoundedCornerShape(MaterialTheme.beThereDimens.textFieldCornerSize)
-                )
-                IconButton(
-                    onClick = {
-                        viewModel.sendMessage(
-                            currentUser = currentUser,
-                            event = event!!,
-                            text = messageText
-                        )
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_send),
-                        contentDescription = null,
-                        tint = MaterialTheme.colors.primary
+                if (sendMessageFailedEvent.isSendMessageFailed) {
+                    BeThereAlertDialog(
+                        title = stringResource(R.string.send_message_failed),
+                        description = sendMessageFailedEvent.exception?.message.toString(),
+                        onDismiss = { viewModel.handledSendMessageFailedEvent() }
                     )
                 }
             }
-        }
-        if (sendMessageFailedEvent.isSendMessageFailed) {
-            BeThereAlertDialog(
-                title = stringResource(R.string.send_message_failed),
-                description = sendMessageFailedEvent.exception?.message.toString(),
-                onDismiss = { viewModel.handledSendMessageFailedEvent() }
-            )
         }
     }
 }

@@ -22,6 +22,8 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import hu.bme.aut.bethere.R
 import hu.bme.aut.bethere.ui.screen.NavGraphs
 import hu.bme.aut.bethere.ui.screen.destinations.*
+import hu.bme.aut.bethere.ui.screen.home.HomeUiState.HomeInit
+import hu.bme.aut.bethere.ui.screen.home.HomeUiState.HomeLoaded
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.view.button.PrimaryButton
 import hu.bme.aut.bethere.ui.view.card.EventCard
@@ -35,6 +37,8 @@ fun HomeScreen(
     navigator: DestinationsNavigator,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val uiState by viewModel.uiState.collectAsState()
+
     val searchText by viewModel.searchText.collectAsState()
     val searchedEvents by viewModel.searchedEvents.collectAsState()
     val events by viewModel.events.observeAsState()
@@ -46,74 +50,86 @@ fun HomeScreen(
             viewModel.getEvents()
         }
     }
+    when (uiState) {
+        HomeLoaded -> {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(1f),
+                    horizontalAlignment = Alignment.CenterHorizontally
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally
-
-        ) {
-            Header(navigator = navigator, viewModel = viewModel)
-            SearchField(
-                text = searchText,
-                onTextChange = viewModel::onSearchTextChange,
-                placeholder = stringResource(R.string.search_event_placeholder)
-            )
-            if (events == null) {
-                BeThereProgressIndicator(modifier = Modifier.weight(weight = 1f, fill = false))
-            } else {
-                LazyColumn(
-                    modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
                 ) {
-                    if (events!!.isEmpty()) {
-                        item {
-                            Text(text = stringResource(R.string.no_events))
-                        }
-                    } else {
-                        items(searchedEvents) { e ->
-                            EventCard(
-                                text = e.name,
-                                onClick = {
-                                    navigator.navigate(
-                                        EventScreenDestination(
-                                            eventId = e.id,
-                                            currentUser = viewModel.currentUser
-                                        )
-                                    )
-                                },
-                                modifier = Modifier
-                                    .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
+                    Header(navigator = navigator, viewModel = viewModel)
+                    SearchField(
+                        text = searchText,
+                        onTextChange = viewModel::onSearchTextChange,
+                        placeholder = stringResource(R.string.search_event_placeholder)
+                    )
+                    if (events == null) {
+                        BeThereProgressIndicator(
+                            modifier = Modifier.weight(
+                                weight = 1f,
+                                fill = false
                             )
+                        )
+                    } else {
+                        LazyColumn(
+                            modifier = Modifier.padding(MaterialTheme.beThereDimens.gapNormal)
+                        ) {
+                            if (events!!.isEmpty()) {
+                                item {
+                                    Text(text = stringResource(R.string.no_events))
+                                }
+                            } else {
+                                items(searchedEvents) { e ->
+                                    EventCard(
+                                        text = e.name,
+                                        onClick = {
+                                            navigator.navigate(
+                                                EventScreenDestination(
+                                                    eventId = e.id,
+                                                    currentUser = viewModel.currentUser
+                                                )
+                                            )
+                                        },
+                                        modifier = Modifier
+                                            .padding(vertical = MaterialTheme.beThereDimens.gapSmall)
+                                    )
+                                }
+                            }
                         }
                     }
                 }
+                PrimaryButton(
+                    text = stringResource(R.string.new_event),
+                    onClick = {
+                        navigator.navigate(
+                            EventDetailsScreenDestination(
+                                eventId = "new",
+                                currentUser = viewModel.currentUser
+                            )
+                        )
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(
+                            start = MaterialTheme.beThereDimens.gapNormal,
+                            end = MaterialTheme.beThereDimens.gapNormal,
+                            bottom = MaterialTheme.beThereDimens.gapNormal,
+                        )
+                )
             }
         }
-        PrimaryButton(
-            text = stringResource(R.string.new_event),
-            onClick = {
-                navigator.navigate(
-                    EventDetailsScreenDestination(
-                        eventId = "new",
-                        currentUser = viewModel.currentUser
-                    )
-                )
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = MaterialTheme.beThereDimens.gapNormal,
-                    end = MaterialTheme.beThereDimens.gapNormal,
-                    bottom = MaterialTheme.beThereDimens.gapNormal,
-                )
-        )
+        HomeInit -> {
+            viewModel.getEvents()
+        }
     }
+
 }
 
 @Composable

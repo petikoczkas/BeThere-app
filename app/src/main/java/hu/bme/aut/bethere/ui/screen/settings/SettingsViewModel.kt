@@ -6,8 +6,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.ui.BeTherePresenter
-import hu.bme.aut.bethere.ui.screen.settings.SettingsUiState.SettingsLoaded
-import hu.bme.aut.bethere.ui.screen.settings.SettingsUiState.SettingsSaved
+import hu.bme.aut.bethere.ui.screen.settings.SettingsUiState.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +20,7 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _uiState =
-        MutableStateFlow<SettingsUiState>(SettingsLoaded(name = "", imageUri = Uri.EMPTY))
+        MutableStateFlow<SettingsUiState>(SettingsInit)
     val uiState: StateFlow<SettingsUiState> = _uiState.asStateFlow()
 
     var currentUser = User()
@@ -34,7 +33,8 @@ class SettingsViewModel @Inject constructor(
     private val _savingState = MutableStateFlow(false)
     val savingState = _savingState.asStateFlow()
 
-    init {
+    fun getCurrentUser() {
+        _uiState.value = SettingsLoaded(name = "", imageUri = Uri.EMPTY)
         viewModelScope.launch {
             currentUser = beTherePresenter.getCurrentUser()
             _uiState.value = SettingsLoaded(

@@ -8,7 +8,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.ui.BeTherePresenter
-import hu.bme.aut.bethere.ui.screen.search.SearchScreenUiState.*
+import hu.bme.aut.bethere.ui.screen.search.SearchUiState.*
 import hu.bme.aut.bethere.utils.Constants
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.*
@@ -21,8 +21,8 @@ class SearchViewModel @Inject constructor(
     private val beTherePresenter: BeTherePresenter
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<SearchScreenUiState>(SearchScreenInit)
-    val uiState: StateFlow<SearchScreenUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<SearchUiState>(SearchInit)
+    val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
     private val _allUser = MutableLiveData<List<User>>()
     val allUser: LiveData<List<User>> = _allUser
@@ -58,11 +58,7 @@ class SearchViewModel @Inject constructor(
         MutableStateFlow(AddFriendFailure(isAddFriendFailed = false, exception = null))
     val addFriendFailedEvent = _addFriendFailedEvent.asStateFlow()
 
-    init {
-        getUsers()
-    }
-
-    private fun getUsers() {
+    fun getUsers() {
         viewModelScope.launch {
             currentUser = beTherePresenter.getCurrentUser()
             withContext(Dispatchers.IO) {
@@ -125,8 +121,8 @@ class SearchViewModel @Inject constructor(
     }
 
     fun setUiState(isAddFriendClicked: Boolean) {
-        if(isAddFriendClicked) _uiState.value = SearchScreenAddFriends
-        else _uiState.value = SearchScreenAddMembers
+        if (isAddFriendClicked) _uiState.value = SearchAddFriends
+        else _uiState.value = SearchAddMembers
     }
 
     data class AddFriendFailure(

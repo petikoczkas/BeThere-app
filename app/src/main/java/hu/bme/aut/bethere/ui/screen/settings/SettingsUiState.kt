@@ -4,6 +4,7 @@ import android.net.Uri
 
 
 sealed class SettingsUiState {
+    object SettingsInit : SettingsUiState()
     data class SettingsLoaded(
         val name: String,
         val imageUri: Uri
