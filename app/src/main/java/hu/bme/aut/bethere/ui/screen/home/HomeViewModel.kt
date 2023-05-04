@@ -8,6 +8,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.ui.BeTherePresenter
+import hu.bme.aut.bethere.ui.screen.home.HomeUiState.HomeInit
+import hu.bme.aut.bethere.ui.screen.home.HomeUiState.HomeLoaded
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.*
@@ -20,6 +22,9 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val beTherePresenter: BeTherePresenter
 ) : ViewModel() {
+
+    private val _uiState = MutableStateFlow<HomeUiState>(HomeInit)
+    val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
     var currentUser = User()
 
@@ -45,11 +50,9 @@ class HomeViewModel @Inject constructor(
             _searchedEvents.value
         )
 
-    init {
-        getEvents()
-    }
-
     fun getEvents() {
+        _uiState.value = HomeLoaded
+        beTherePresenter.deleteExpiredEvents()
         viewModelScope.launch {
             delay(500)
             currentUser = beTherePresenter.getCurrentUser()

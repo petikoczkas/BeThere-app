@@ -120,6 +120,12 @@ class BeThereInteractor @Inject constructor(
         )
     }
 
+    fun deleteExpiredEvents() {
+        firebaseStorageService.deleteExpiredEvents(
+            firebaseFirestore = firebaseFirestore
+        )
+    }
+
     suspend fun uploadProfilePicture(
         userId: String,
         imageUri: Uri,

@@ -65,6 +65,10 @@ class BeTherePresenter @Inject constructor(
         beThereInteractor.updateEvent(event = event)
     }
 
+    fun deleteExpiredEvents() {
+        beThereInteractor.deleteExpiredEvents()
+    }
+
     suspend fun uploadProfilePicture(userId: String, imageUri: Uri, onSuccess: (String) -> Unit) {
         beThereInteractor.uploadProfilePicture(
             userId = userId,

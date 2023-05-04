@@ -9,10 +9,13 @@ import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.utils.Constants.EVENT_COLLECTION
 import hu.bme.aut.bethere.utils.Constants.USER_COLLECTION
+import hu.bme.aut.bethere.utils.toTimestamp
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
+import java.time.LocalTime
 import javax.inject.Inject
 
 class FirebaseStorageService @Inject constructor() {
@@ -136,6 +139,30 @@ class FirebaseStorageService @Inject constructor() {
         if (event.users.isEmpty()) firebaseFirestore.collection(EVENT_COLLECTION).document(event.id)
             .delete().await()
         else firebaseFirestore.collection(EVENT_COLLECTION).document(event.id).set(event).await()
+    }
+
+    fun deleteExpiredEvents(
+        firebaseFirestore: FirebaseFirestore
+    ) {
+        firebaseFirestore.collection(EVENT_COLLECTION).addSnapshotListener { value, e ->
+            e?.let {
+                return@addSnapshotListener
+            }
+            value?.let {
+                for (d in it.documents) {
+                    d.toObject(Event::class.java)?.let { event ->
+                        if (event.date < toTimestamp(
+                                LocalDate.now(),
+                                LocalTime.of(LocalTime.now().hour - 1, LocalTime.now().minute)
+                            )
+                        ) {
+                            firebaseFirestore.collection(EVENT_COLLECTION).document(event.id)
+                                .delete()
+                        }
+                    }
+                }
+            }
+        }
     }
 
     suspend fun uploadProfilePicture(
