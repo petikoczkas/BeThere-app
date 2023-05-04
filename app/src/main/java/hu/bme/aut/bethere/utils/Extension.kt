@@ -1,7 +1,6 @@
 package hu.bme.aut.bethere.utils
 
 import android.annotation.SuppressLint
-import android.util.Patterns
 import com.google.firebase.Timestamp
 import java.text.SimpleDateFormat
 import java.time.LocalDate
@@ -11,21 +10,32 @@ import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Pattern
 
-private const val MIN_PASS_LENGTH = 8
+private const val EMAIL_PATTERN =
+    "^[_A-Za-z\\d-+]+(\\.[_A-Za-z\\d-]+)*@[A-Za-z\\d-]+(\\.[A-Za-z\\d]+)*(\\.[A-Za-z]{2,})$"
 private const val PASS_PATTERN = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z]).{8,}$"
 
 fun String.isValidEmail(): Boolean {
-    return this.isNotBlank() && Patterns.EMAIL_ADDRESS.matcher(this).matches()
+    return this.isNotBlank() && Pattern.compile(EMAIL_PATTERN).matcher(this).matches()
 }
 
 fun String.isValidPassword(): Boolean {
     return this.isNotBlank() &&
-            this.length >= MIN_PASS_LENGTH &&
             Pattern.compile(PASS_PATTERN).matcher(this).matches()
 }
 
 fun String.passwordMatches(repeated: String): Boolean {
     return this == repeated
+}
+
+fun String.removeEmptyLines(): String {
+    var tmp = this
+    while (tmp[0].isWhitespace()) {
+        tmp = tmp.drop(1)
+    }
+    while (tmp[tmp.length - 1].isWhitespace()) {
+        tmp = tmp.dropLast(1)
+    }
+    return tmp
 }
 
 @SuppressLint("SimpleDateFormat")
@@ -34,6 +44,20 @@ fun Timestamp.toSimpleString(): String {
     val milliseconds = this.seconds * 1000 + this.nanoseconds / 1000000
     val date = Date(milliseconds)
     return sdf.format(date).toString()
+}
+
+fun Timestamp.toLocalDate(): LocalDate {
+    val date = this.toSimpleString()
+    return LocalDate.of(
+        date.substring(0, 4).toInt(),
+        date.substring(5, 7).toInt(),
+        date.substring(8, 10).toInt()
+    )
+}
+
+fun Timestamp.toLocalTime(): LocalTime {
+    val date = this.toSimpleString()
+    return LocalTime.of(date.substring(11, 13).toInt(), date.substring(14, 16).toInt())
 }
 
 fun toTimestamp(date: LocalDate, time: LocalTime): Timestamp {

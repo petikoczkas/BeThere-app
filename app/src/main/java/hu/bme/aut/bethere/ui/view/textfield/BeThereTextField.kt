@@ -1,6 +1,5 @@
 package hu.bme.aut.bethere.ui.view.textfield
 
-import android.util.Patterns
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,6 +19,7 @@ import androidx.compose.ui.text.input.VisualTransformation
 import hu.bme.aut.bethere.R
 import hu.bme.aut.bethere.ui.theme.beThereDimens
 import hu.bme.aut.bethere.ui.theme.beThereTypography
+import hu.bme.aut.bethere.utils.isValidEmail
 
 
 @Composable
@@ -45,7 +45,7 @@ fun BeThereTextField(
         isErrorInText = firstPassword != text
     }
     if (isEmail) {
-        isErrorInText = !Patterns.EMAIL_ADDRESS.matcher(text).matches()
+        isErrorInText = !text.isValidEmail()
     }
 
 
