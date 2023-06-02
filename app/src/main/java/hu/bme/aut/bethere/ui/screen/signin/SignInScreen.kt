@@ -10,6 +10,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -61,7 +62,9 @@ fun SignInScreen(
                     EmailTextField(
                         email = (uiState as SignInLoaded).email,
                         onEmailTextChange = viewModel::onEmailChange,
-                        modifier = Modifier.padding(bottom = MaterialTheme.beThereDimens.gapLarge)
+                        modifier = Modifier
+                            .padding(bottom = MaterialTheme.beThereDimens.gapLarge)
+                            .testTag("emailTextField")
                     )
                     PasswordTextField(
                         password = (uiState as SignInLoaded).password,
