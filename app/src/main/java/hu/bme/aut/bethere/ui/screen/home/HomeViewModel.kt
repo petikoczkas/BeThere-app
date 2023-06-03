@@ -56,6 +56,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             delay(500)
             currentUser = beTherePresenter.getCurrentUser()
+            beTherePresenter.subscribeToTopic(currentUser.id)
             withContext(Dispatchers.IO) {
                 beTherePresenter.getCurrentUserEvents(currentUser).collect {
                     _events.postValue(it)
