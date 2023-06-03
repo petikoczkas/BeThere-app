@@ -19,11 +19,7 @@ class SignInViewModel @Inject constructor(
     private val beTherePresenter: BeTherePresenter
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow<SignInUiState>(
-        SignInLoaded(
-            email = "", password = ""
-        )
-    )
+    private val _uiState = MutableStateFlow<SignInUiState>(SignInUiState.SignInInit)
     val uiState: StateFlow<SignInUiState> = _uiState.asStateFlow()
 
     private val _signInFailedEvent =
@@ -44,6 +40,12 @@ class SignInViewModel @Inject constructor(
     fun isButtonEnabled(): Boolean {
         if (!(_uiState.value as SignInLoaded).email.isValidEmail() or (_uiState.value as SignInLoaded).password.isBlank()) return false
         return true
+    }
+
+    fun isLoggedIn(): Boolean {
+        if (beTherePresenter.isLoggedIn()) return true
+        _uiState.value = SignInLoaded("", "")
+        return false
     }
 
     fun buttonOnClick() {

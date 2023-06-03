@@ -107,5 +107,8 @@ fun SignInScreen(
         is SignInSuccess -> {
             navigator.navigate(HomeScreenDestination)
         }
+        SignInUiState.SignInInit -> {
+            if (viewModel.isLoggedIn()) navigator.navigate(HomeScreenDestination)
+        }
     }
 }

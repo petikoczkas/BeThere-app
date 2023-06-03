@@ -77,5 +77,9 @@ class BeTherePresenter @Inject constructor(
         )
     }
 
+    fun subscribeToTopic(id: String) = beThereInteractor.subscribeToTopic(id)
+
+    fun isLoggedIn() = beThereInteractor.isLoggedIn()
+
 }
 

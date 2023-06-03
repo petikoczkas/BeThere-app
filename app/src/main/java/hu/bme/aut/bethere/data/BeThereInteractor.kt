@@ -4,10 +4,12 @@ import android.net.Uri
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
+import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
 import hu.bme.aut.bethere.data.model.Event
 import hu.bme.aut.bethere.data.model.User
 import hu.bme.aut.bethere.service.FirebaseAuthService
+import hu.bme.aut.bethere.service.FirebaseMessageService
 import hu.bme.aut.bethere.service.FirebaseStorageService
 import hu.bme.aut.bethere.utils.Constants.NAME_PROPERTY
 import hu.bme.aut.bethere.utils.Constants.PICTURE_FOLDER
@@ -16,11 +18,13 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class BeThereInteractor @Inject constructor(
-    private val firebaseStorageService: FirebaseStorageService
+    private val firebaseStorageService: FirebaseStorageService,
+    private val firebaseMessageService: FirebaseMessageService
 ) {
     private val firebaseAuth = FirebaseAuth.getInstance()
     private val firebaseFirestore = FirebaseFirestore.getInstance()
     private val firebaseStorage = FirebaseStorage.getInstance().reference.child(PICTURE_FOLDER)
+    private val firebaseMessaging = FirebaseMessaging.getInstance()
     private var currentUser = firebaseAuth.currentUser
 
     private val queryUsers = firebaseFirestore.collection(USER_COLLECTION)
@@ -137,6 +141,17 @@ class BeThereInteractor @Inject constructor(
             imageUri = imageUri,
             onSuccess = onSuccess
         )
+    }
+
+    fun subscribeToTopic(id: String) {
+        firebaseMessageService.subscribeToTopic(
+            firebaseMessaging = firebaseMessaging,
+            id = id
+        )
+    }
+
+    fun isLoggedIn(): Boolean {
+        return currentUser != null
     }
 }
 
