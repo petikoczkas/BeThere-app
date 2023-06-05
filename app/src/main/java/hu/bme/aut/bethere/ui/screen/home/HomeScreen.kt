@@ -146,8 +146,11 @@ private fun Header(
         IconButton(
             onClick = {
                 viewModel.signOut()
-                navigator.clearBackStack(NavGraphs.root)
-                navigator.navigate(SignInScreenDestination)
+                navigator.navigate(SignInScreenDestination) {
+                    popUpTo(NavGraphs.root.route) {
+                        inclusive = true
+                    }
+                }
             },
             modifier = Modifier.padding(start = MaterialTheme.beThereDimens.gapMedium)
         ) {
